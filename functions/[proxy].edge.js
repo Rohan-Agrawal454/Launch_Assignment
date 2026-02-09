@@ -6,6 +6,7 @@ export default async function handler(request, context) {
   // ============================================
   
   // Define whitelisted IPs (add your device IP here)
+  if (request.url.includes('/editor-dashboard')) {
   const allowedIPs = [
     "127.0.0.1",           // Localhost IPv4
     "::1",                 // Localhost IPv6
@@ -43,7 +44,8 @@ export default async function handler(request, context) {
       }
     );
   }
-  
+  return fetch(request);
+  }
   // ============================================
   // OAUTH SSO AUTHENTICATION (for /author-tools)
   // ============================================
