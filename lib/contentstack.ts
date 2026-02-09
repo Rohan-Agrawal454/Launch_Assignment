@@ -97,25 +97,28 @@ export interface BlogPost {
 
 /**
  * Fetch homepage content (singleton)
+ * @param locale - Locale code (e.g., 'en-us', 'fr-fr', 'ja-jp')
  * @returns Homepage content or null
  */
-export async function getHomepage(): Promise<Homepage | null> {
+export async function getHomepage(locale: string = 'en-us'): Promise<Homepage | null> {
   try {
-    console.log('🔵 Fetching homepage from Contentstack...');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = await (Stack.contentType('homepage').entry() as any).find();
+    console.log(`🔵 Fetching homepage from Contentstack for locale: ${locale}`);
+    const result = await Stack.contentType('homepage')
+      .entry()
+      .locale(locale)
+      .find<Homepage>();
 
     // Since homepage is a singleton, get the first entry
     if (!result.entries || result.entries.length === 0) {
-      console.log('⚠️ No homepage entries found in Contentstack');
+      console.log(`⚠️ No homepage entries found for locale: ${locale}`);
       return null;
     }
 
     const entry = result.entries[0];
-    console.log('✅ Homepage fetched successfully:', entry.title);
-    return entry as Homepage;
+    console.log('✅ Homepage fetched successfully:', entry.title, `(locale: ${locale})`);
+    return entry;
   } catch (error) {
-    console.error('❌ Error fetching homepage:', error);
+    console.error(`❌ Error fetching homepage for locale ${locale}:`, error);
     return null;
   }
 }

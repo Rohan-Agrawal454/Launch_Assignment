@@ -12,12 +12,14 @@
     "dependencies": {
         "@contentstack/delivery-sdk": "^4.11.0",
         "contentstack": "^3.26.4",
+        "js-cookie": "^3.0.5",
         "next": "16.1.6",
         "react": "19.2.3",
         "react-dom": "19.2.3"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4",
+        "@types/js-cookie": "^3.0.6",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",

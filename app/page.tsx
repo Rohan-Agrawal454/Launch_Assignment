@@ -1,7 +1,9 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getHomepage } from "@/lib/contentstack";
 import type { Metadata } from "next";
+import { cookies } from 'next/headers';
 
 // Helper function to get color classes
 const getColorClasses = (colour: string) => {
@@ -32,7 +34,9 @@ const getColorClasses = (colour: string) => {
 
 // Generate metadata from CMS
 export async function generateMetadata(): Promise<Metadata> {
-  const homepage = await getHomepage();
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en-us';
+  const homepage = await getHomepage(locale);
 
   return {
     title: homepage?.seo?.meta_title || homepage?.title || 'AI Blog Platform',
@@ -41,8 +45,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // Fetch homepage content from Contentstack
-  const homepage = await getHomepage();
+  // Get locale from cookie or default to English
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en-us';
+  
+  // Fetch homepage content from Contentstack with selected locale
+  const homepage = await getHomepage(locale);
 
   // If CMS data is not available, show loading or fallback
   if (!homepage) {
@@ -59,6 +67,11 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Navbar />
+
+      {/* Language Switcher - Fixed Position */}
+      <div className="fixed top-20 right-4 z-50">
+        <LanguageSwitcher currentLocale={locale} />
+      </div>
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
