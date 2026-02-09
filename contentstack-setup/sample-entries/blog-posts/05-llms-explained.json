@@ -1,0 +1,11 @@
+{
+  "title": "Large Language Models Explained",
+  "slug": "llms-explained",
+  "excerpt": "A deep dive into LLM architecture, training methodologies, and how these models understand language.",
+  "content": "<h2>Understanding LLMs</h2><p>Large Language Models have transformed natural language processing.</p><h3>Architecture</h3><p>LLMs use transformer architectures with billions of parameters to process and generate text.</p><h3>Training Process</h3><p>These models are trained on massive datasets containing billions of words from diverse sources.</p>",
+  "category": "GenerativeAI",
+  "post_tags": "LLMs, transformers, NLP",
+  "status": "Published",
+  "is_trending": false,
+  "view_count": 2156
+}

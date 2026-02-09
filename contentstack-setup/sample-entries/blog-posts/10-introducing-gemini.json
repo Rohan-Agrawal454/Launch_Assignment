@@ -1,0 +1,11 @@
+{
+  "title": "Introducing Google Gemini",
+  "slug": "introducing-gemini",
+  "excerpt": "An in-depth look at Google's Gemini AI model and its multimodal capabilities.",
+  "content": "<h2>Google Gemini Overview</h2><p>Google Gemini represents a new era in multimodal AI systems.</p><h3>Multimodal Capabilities</h3><p>Gemini can process and understand text, images, audio, and video simultaneously.</p><h3>Performance</h3><p>Gemini Ultra achieves state-of-the-art results across various benchmarks.</p>",
+  "category": "Gemini",
+  "post_tags": "Gemini, Google AI, multimodal AI",
+  "status": "Published",
+  "is_trending": true,
+  "view_count": 3456
+}

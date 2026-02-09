@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RenderingBadge from "@/components/RenderingBadge";
 import BlogCard from "@/components/BlogCard";
+import { getBlogPostsByCategory } from "@/lib/contentstack";
 
 export const metadata: Metadata = {
   title: "AI Blog | AI Blog Platform",
@@ -9,30 +10,8 @@ export const metadata: Metadata = {
 
 // Static Site Generation (SSG) - Evergreen content
 export default async function AIBlogPage() {
-  // TODO: Fetch content from Contentstack
-  const posts = [
-    {
-      id: 1,
-      title: "Understanding Artificial Intelligence",
-      excerpt: "A comprehensive guide to AI fundamentals and applications",
-      date: "2026-02-01",
-      slug: "understanding-ai"
-    },
-    {
-      id: 2,
-      title: "Machine Learning Best Practices",
-      excerpt: "Essential practices for building robust ML models",
-      date: "2026-01-28",
-      slug: "ml-best-practices"
-    },
-    {
-      id: 3,
-      title: "The Future of AI Technology",
-      excerpt: "Exploring upcoming trends and innovations in AI",
-      date: "2026-01-25",
-      slug: "future-of-ai"
-    }
-  ];
+  // Fetch posts from Contentstack
+  const posts = await getBlogPostsByCategory('AI');
 
   return (
     <div>
@@ -41,20 +20,28 @@ export default async function AIBlogPage() {
         Dive deep into the world of artificial intelligence with our comprehensive articles and tutorials.
       </p>
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
-          <BlogCard
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            excerpt={post.excerpt}
-            date={post.date}
-            slug={post.slug}
-            href={`/blog/ai/${post.slug}`}
-            accentColor="blue"
-          />
-        ))}
-      </div>
+      {posts.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <BlogCard
+              key={post.uid}
+              id={post.uid}
+              slug={post.slug}
+              title={post.title}
+              excerpt={post.excerpt}
+              date={post.publish_details?.time || post.created_at || ''}
+              category={post.category}
+              href={`/blog/ai/${post.slug}`}
+              views={post.view_count}
+              accentColor="blue"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-gray-600 text-lg">No posts found. Please add content in Contentstack CMS.</p>
+        </div>
+      )}
 
       <RenderingBadge strategy="SSG" />
     </div>

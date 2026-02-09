@@ -1,0 +1,11 @@
+{
+  "title": "Introduction to Generative AI",
+  "slug": "intro-to-generative-ai",
+  "excerpt": "Understanding how generative models create new content, from text to images, and revolutionize creative industries.",
+  "content": "<h2>What is Generative AI?</h2><p>Generative AI represents a paradigm shift in how machines create content.</p><h3>How It Works</h3><p>Using advanced neural networks, generative models learn patterns from training data to create entirely new, original content.</p><h3>Applications</h3><p>From art generation to code completion, generative AI is transforming creative workflows.</p><h3>Popular Models</h3><p>GPT-4, DALL-E, Midjourney, and Stable Diffusion are leading the generative AI revolution.</p>",
+  "category": "GenerativeAI",
+  "post_tags": "generative AI, LLMs, image generation",
+  "status": "Published",
+  "is_trending": true,
+  "view_count": 3125
+}

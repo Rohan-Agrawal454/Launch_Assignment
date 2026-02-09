@@ -1,0 +1,11 @@
+{
+  "title": "Understanding Artificial Intelligence: A Comprehensive Guide",
+  "slug": "understanding-ai",
+  "excerpt": "Dive deep into the fundamentals of AI, exploring its history, current applications, and future potential in transforming our world.",
+  "content": "<h2>Introduction to AI</h2><p>Artificial Intelligence has revolutionized the way we live, work, and interact with technology. This comprehensive guide covers everything from the basics to advanced concepts.</p><h3>What is AI?</h3><p>At its core, AI is the simulation of human intelligence processes by machines, especially computer systems.</p><h3>Machine Learning</h3><p>Machine learning, a subset of AI, enables systems to learn and improve from experience without being explicitly programmed.</p><h3>Applications</h3><p>From healthcare to finance, AI is transforming every industry with innovative applications.</p>",
+  "category": "AI",
+  "post_tags": "artificial intelligence, machine learning, deep learning, neural networks",
+  "status": "Published",
+  "is_trending": true,
+  "view_count": 2845
+}

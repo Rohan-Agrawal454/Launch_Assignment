@@ -1,0 +1,11 @@
+{
+  "title": "Building with Gemini API",
+  "slug": "building-with-gemini",
+  "excerpt": "A developer's guide to integrating Google Gemini into your applications.",
+  "content": "<h2>Gemini API Development</h2><p>Building with Gemini API opens up powerful multimodal capabilities.</p><h3>Getting Started</h3><p>Learn how to authenticate, make API calls, and handle responses.</p><h3>Best Practices</h3><p>Optimize your API usage for cost-effectiveness and performance.</p>",
+  "category": "Gemini",
+  "post_tags": "Gemini API, development, integration",
+  "status": "Published",
+  "is_trending": false,
+  "view_count": 1654
+}

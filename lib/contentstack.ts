@@ -1,22 +1,74 @@
 /**
- * Contentstack SDK Configuration and Utility Functions
- * 
- * This module provides the configuration for Contentstack SDK and
+ * Contentstack Delivery SDK Configuration and Utility Functions
+ *
+ * This module provides the configuration for Contentstack Delivery SDK and
  * utility functions to fetch content from Contentstack CMS.
  */
 
-import Contentstack from 'contentstack';
+import contentstack, { QueryOperation } from '@contentstack/delivery-sdk';
 
-// Initialize Contentstack Stack
-const Stack = Contentstack.Stack({
-  api_key: process.env.CONTENTSTACK_API_KEY || '',
-  delivery_token: process.env.CONTENTSTACK_DELIVERY_TOKEN || '',
+// Type for Contentstack region
+type Region = 'US' | 'EU' | 'AZURE_NA' | 'AZURE_EU' | 'GCP_NA';
+
+// Initialize Contentstack Stack with Delivery SDK
+const Stack = contentstack.stack({
+  apiKey: process.env.CONTENTSTACK_API_KEY || '',
+  deliveryToken: process.env.CONTENTSTACK_DELIVERY_TOKEN || '',
   environment: process.env.CONTENTSTACK_ENVIRONMENT || 'production',
-  region: (process.env.CONTENTSTACK_REGION || 'us') as any
+  region: (process.env.CONTENTSTACK_REGION || 'US') as Region
 });
 
 /**
- * Blog Post Type Definition
+ * Homepage Type Definition (matches Contentstack response)
+ */
+export interface Homepage {
+  uid: string;
+  title: string;
+  locale?: string;
+  _version?: number;
+  created_at?: string;
+  updated_at?: string;
+  hero_section: {
+    title: string;
+    subtitle: string;
+    primary_cta: {
+      text: string;
+      link: string;
+    };
+    secondary_cta: {
+      text: string;
+      link: string;
+    };
+  };
+  featured_categories: Array<{
+    title: string;
+    description: string;
+    icon: string;
+    link: string;
+    colour: string; // Note: Contentstack uses 'colour' not 'color'
+    _metadata?: {
+      uid: string;
+    };
+  }>;
+  features_section: {
+    title: string; // Note: It's 'title' not 'section_title'
+    features_group: Array<{ // Note: It's 'features_group' not 'features'
+      icon: string;
+      title: string;
+      description: string;
+      _metadata?: {
+        uid: string;
+      };
+    }>;
+  };
+  seo?: {
+    meta_title: string;
+    meta_description: string;
+  };
+}
+
+/**
+ * Blog Post Type Definition (matches Contentstack response)
  */
 export interface BlogPost {
   uid: string;
@@ -24,111 +76,106 @@ export interface BlogPost {
   slug: string;
   excerpt: string;
   content: string;
-  category: string;
-  author?: Author;
-  featured_image?: {
-    url: string;
-    title: string;
-  };
-  tags?: string[];
-  published_date: string;
-  seo_metadata?: {
-    meta_title: string;
-    meta_description: string;
-    meta_keywords: string[];
-  };
+  category: 'AI' | 'GenerativeAI' | 'ChatGPT' | 'Gemini';
+  post_tags?: string;
   status: 'Draft' | 'Review' | 'Published';
   is_trending: boolean;
   view_count: number;
+  locale?: string;
+  _version?: number;
+  created_at?: string;
+  updated_at?: string;
+  publish_details?: {
+    time: string;
+    user: string;
+    environment: string;
+    locale: string;
+  };
+}
+
+
+
+/**
+ * Fetch homepage content (singleton)
+ * @returns Homepage content or null
+ */
+export async function getHomepage(): Promise<Homepage | null> {
+  try {
+    console.log('🔵 Fetching homepage from Contentstack...');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await (Stack.contentType('homepage').entry() as any).find();
+
+    // Since homepage is a singleton, get the first entry
+    if (!result.entries || result.entries.length === 0) {
+      console.log('⚠️ No homepage entries found in Contentstack');
+      return null;
+    }
+
+    const entry = result.entries[0];
+    console.log('✅ Homepage fetched successfully:', entry.title);
+    return entry as Homepage;
+  } catch (error) {
+    console.error('❌ Error fetching homepage:', error);
+    return null;
+  }
 }
 
 /**
- * Author Type Definition
+ * Fetch all blog posts
+ * @param limit - Maximum number of posts to fetch
+ * @returns Array of blog posts
  */
-export interface Author {
-  uid: string;
-  name: string;
-  bio?: string;
-  avatar?: {
-    url: string;
-    title: string;
-  };
-  email?: string;
-  social_links?: Array<{
-    platform: string;
-    url: string;
-  }>;
+export async function getAllBlogPosts(limit: number = 5): Promise<BlogPost[]> {
+  try {
+    console.log('🔵 Fetching all blog posts from Contentstack...');
+    const result = await Stack.contentType('blog_post')
+      .entry()
+      .query()
+      .where('status', QueryOperation.EQUALS, 'Published')
+      .limit(limit)
+      .find<BlogPost>();
+      
+    if (!result.entries || result.entries.length === 0) {
+      console.log('⚠️ No blog posts found in Contentstack');
+      return [];
+    }
+    
+    console.log(`✅ Fetched ${result.entries.length} blog posts`);
+    return result.entries;
+  } catch (error) {
+    console.error('❌ Error fetching blog posts:', error);
+    return [];
+  }
 }
 
 /**
  * Fetch blog posts by category
- * @param category - Category slug (e.g., 'AI', 'Generative AI', 'ChatGPT', 'Gemini')
+ * @param category - Category name
+ * @param limit - Maximum number of posts to fetch
  * @returns Array of blog posts
  */
-export async function getBlogPostsByCategory(category: string): Promise<BlogPost[]> {
+export async function getBlogPostsByCategory(
+  category: string
+): Promise<BlogPost[]> {
   try {
-    const query = Stack.ContentType('blog_post').Query();
+    console.log(`🔵 Fetching blog posts for category: ${category}`);
     
-    const result = await query
-      .where('category', category)
-      .where('status', 'Published')
-      .descending('published_date')
-      .includeReference('author')
-      .toJSON()
-      .find();
-      
-    return result[0] || [];
-  } catch (error) {
-    console.error(`Error fetching posts for category ${category}:`, error);
-    return [];
-  }
-}
-
-/**
- * Fetch all published blog posts
- * @param limit - Maximum number of posts to fetch (default: 50)
- * @returns Array of blog posts
- */
-export async function getAllBlogPosts(limit: number = 50): Promise<BlogPost[]> {
-  try {
-    const query = Stack.ContentType('blog_post').Query();
+    const result = await Stack.contentType('blog_post')
+      .entry()
+      .query()
+      .where('status', QueryOperation.EQUALS, 'Published')
+      .where('category', QueryOperation.EQUALS, category)
+      .find<BlogPost>();
     
-    const result = await query
-      .where('status', 'Published')
-      .descending('published_date')
-      .limit(limit)
-      .includeReference('author')
-      .toJSON()
-      .find();
-      
-    return result[0] || [];
-  } catch (error) {
-    console.error('Error fetching all posts:', error);
-    return [];
-  }
-}
-
-/**
- * Fetch trending blog posts
- * @param limit - Maximum number of trending posts (default: 5)
- * @returns Array of trending blog posts
- */
-export async function getTrendingPosts(limit: number = 5): Promise<BlogPost[]> {
-  try {
-    const query = Stack.ContentType('blog_post').Query();
+    if (!result.entries || result.entries.length === 0) {
+      console.log(`⚠️ No posts found for category: ${category}`);
+      return [];
+    }
     
-    const result = await query
-      .where('status', 'Published')
-      .where('is_trending', true)
-      .descending('view_count')
-      .limit(limit)
-      .includeReference('author')
-      .toJSON()
-      .find();
-      
-    return result[0] || [];
+    console.log(`✅ Found ${result.entries.length} posts for category: ${category}`);
+    return result.entries;
   } catch (error) {
-    console.error('Error fetching trending posts:', error);
+    console.error(`❌ Error fetching posts for category ${category}:`, error);
     return [];
   }
 }
@@ -140,16 +187,18 @@ export async function getTrendingPosts(limit: number = 5): Promise<BlogPost[]> {
  */
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
-    const query = Stack.ContentType('blog_post').Query();
-    
-    const result = await query
-      .where('slug', slug)
-      .where('status', 'Published')
-      .includeReference('author')
-      .toJSON()
-      .find();
+    const result = await Stack.contentType('blog_post')
+      .entry()
+      .query()
+      .where('slug', QueryOperation.EQUALS, slug)
+      .where('status', QueryOperation.EQUALS, 'Published')
+      .find<BlogPost>();
       
-    return result[0]?.[0] || null;
+    if (!result.entries || result.entries.length === 0) {
+      return null;
+    }
+    
+    return result.entries[0];
   } catch (error) {
     console.error(`Error fetching post with slug ${slug}:`, error);
     return null;
@@ -157,44 +206,27 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
 }
 
 /**
- * Fetch all authors
- * @returns Array of authors
+ * Fetch trending blog posts
+ * @param limit - Maximum number of trending posts
+ * @returns Array of trending blog posts
  */
-export async function getAllAuthors(): Promise<Author[]> {
+export async function getTrendingPosts(limit: number = 5): Promise<BlogPost[]> {
   try {
-    const query = Stack.ContentType('author').Query();
-    
-    const result = await query
-      .toJSON()
-      .find();
+    const result = await Stack.contentType('blog_post')
+      .entry()
+      .query()
+      .where('status', QueryOperation.EQUALS, 'Published')
+      .where('is_trending', QueryOperation.EQUALS, true)
+      .limit(limit)
+      .find<BlogPost>();
       
-    return result[0] || [];
-  } catch (error) {
-    console.error('Error fetching authors:', error);
-    return [];
-  }
-}
-
-/**
- * Fetch posts by author
- * @param authorUid - Author UID
- * @returns Array of blog posts by the author
- */
-export async function getPostsByAuthor(authorUid: string): Promise<BlogPost[]> {
-  try {
-    const query = Stack.ContentType('blog_post').Query();
+    if (!result.entries || result.entries.length === 0) {
+      return [];
+    }
     
-    const result = await query
-      .where('author', authorUid)
-      .where('status', 'Published')
-      .descending('published_date')
-      .includeReference('author')
-      .toJSON()
-      .find();
-      
-    return result[0] || [];
+    return result.entries;
   } catch (error) {
-    console.error(`Error fetching posts by author ${authorUid}:`, error);
+    console.error('Error fetching trending posts:', error);
     return [];
   }
 }

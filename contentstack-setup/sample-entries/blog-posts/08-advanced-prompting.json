@@ -1,0 +1,11 @@
+{
+  "title": "Advanced ChatGPT Prompting Techniques",
+  "slug": "advanced-prompting",
+  "excerpt": "Master the art of prompt engineering to get the best results from ChatGPT.",
+  "content": "<h2>Advanced Prompting</h2><p>Effective prompt engineering can dramatically improve ChatGPT outputs.</p><h3>Prompt Strategies</h3><p>Learn techniques like few-shot learning, chain-of-thought prompting, and more.</p><h3>Best Practices</h3><p>Be specific, provide context, and iterate on your prompts for optimal results.</p>",
+  "category": "ChatGPT",
+  "post_tags": "prompt engineering, ChatGPT, advanced",
+  "status": "Published",
+  "is_trending": false,
+  "view_count": 2987
+}

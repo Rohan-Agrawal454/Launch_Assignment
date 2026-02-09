@@ -1,7 +1,61 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getHomepage } from "@/lib/contentstack";
+import type { Metadata } from "next";
 
-export default function Home() {
+// Helper function to get color classes
+const getColorClasses = (colour: string) => {
+  const colors: Record<string, { border: string; bg: string; text: string }> = {
+    blue: {
+      border: 'border-blue-100',
+      bg: 'from-blue-100 to-blue-200',
+      text: 'text-blue-600'
+    },
+    purple: {
+      border: 'border-purple-100',
+      bg: 'from-purple-100 to-purple-200',
+      text: 'text-purple-600'
+    },
+    green: {
+      border: 'border-green-100',
+      bg: 'from-green-100 to-green-200',
+      text: 'text-green-600'
+    },
+    orange: {
+      border: 'border-orange-100',
+      bg: 'from-orange-100 to-orange-200',
+      text: 'text-orange-600'
+    }
+  };
+  return colors[colour] || colors.blue;
+};
+
+// Generate metadata from CMS
+export async function generateMetadata(): Promise<Metadata> {
+  const homepage = await getHomepage();
+
+  return {
+    title: homepage?.seo?.meta_title || homepage?.title || 'AI Blog Platform',
+    description: homepage?.seo?.meta_description || homepage?.hero_section.subtitle || 'Your premier AI blog platform',
+  };
+}
+
+export default async function Home() {
+  // Fetch homepage content from Contentstack
+  const homepage = await getHomepage();
+
+  // If CMS data is not available, show loading or fallback
+  if (!homepage) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h1>
+          <p className="text-gray-600">Fetching content from CMS</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Navbar />
@@ -10,110 +64,74 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Welcome to AI Blog Platform
+            {homepage.hero_section.title}
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Your premier destination for the latest insights, tutorials, and news about artificial intelligence, 
-            machine learning, and emerging AI technologies.
+            {homepage.hero_section.subtitle}
           </p>
           <div className="flex gap-4 justify-center">
             <a 
-              href="/blog/latest" 
+              href={homepage.hero_section.primary_cta.link}
               className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
             >
-              Explore Latest Articles
+              {homepage.hero_section.primary_cta.text}
             </a>
             <a 
-              href="/author-tools" 
+              href={homepage.hero_section.secondary_cta.link}
               className="px-8 py-3 bg-white hover:bg-gray-50 text-gray-900 font-semibold rounded-lg border-2 border-gray-200 transition-colors"
             >
-              Author Tools
+              {homepage.hero_section.secondary_cta.text}
             </a>
           </div>
         </div>
 
-        {/* Categories Grid */}
+        {/* Categories Grid - Fetched from CMS */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          <a href="/blog/ai" className="group animate-fade-in">
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-blue-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm">
-                <span className="text-3xl">🤖</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">Artificial Intelligence</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Explore AI fundamentals, applications, and innovations</p>
-              <div className="mt-4 text-blue-600 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                Explore <span className="transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="/blog/generativeai" className="group animate-fade-in" style={{animationDelay: '0.1s'}}>
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-purple-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm">
-                <span className="text-3xl">✨</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">Generative AI</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Discover LLMs, image generation, and creative AI</p>
-              <div className="mt-4 text-purple-600 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                Explore <span className="transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="/blog/chatgpt" className="group animate-fade-in" style={{animationDelay: '0.2s'}}>
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-green-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm">
-                <span className="text-3xl">💬</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">ChatGPT</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Master ChatGPT usage and prompt engineering</p>
-              <div className="mt-4 text-green-600 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                Explore <span className="transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="/blog/gemini" className="group animate-fade-in" style={{animationDelay: '0.3s'}}>
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-orange-100">
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm">
-                <span className="text-3xl">🔷</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">Gemini AI</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">Learn about Google&apos;s multimodal AI model</p>
-              <div className="mt-4 text-orange-600 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                Explore <span className="transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </div>
-          </a>
+          {homepage.featured_categories.map((category, index) => {
+            const colors = getColorClasses(category.colour);
+            return (
+              <a 
+                key={category._metadata?.uid || index} 
+                href={category.link} 
+                className="group animate-fade-in"
+                style={{animationDelay: `${index * 0.1}s`}}
+              >
+                <div className={`bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border ${colors.border}`}>
+                  <div className={`w-14 h-14 bg-gradient-to-br ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm`}>
+                    <span className="text-3xl">{category.icon}</span>
+                  </div>
+                  <h3 className={`text-xl font-semibold text-gray-900 mb-2 group-hover:${colors.text} transition-colors`}>
+                    {category.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {category.description}
+                  </p>
+                  <div className={`mt-4 ${colors.text} font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1`}>
+                    Explore <span className="transition-transform group-hover:translate-x-1">→</span>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
 
-        {/* Features Section */}
+        {/* Features Section - Fetched from CMS */}
         <div className="bg-white rounded-xl shadow-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Platform Features</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            {homepage.features_section.title}
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">⚡</span>
+            {homepage.features_section.features_group.map((feature, index) => (
+              <div key={feature._metadata?.uid || index} className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-3xl">{feature.icon}</span>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">High Performance</h3>
-              <p className="text-gray-600">Optimized with SSG, ISR, and SSR for blazing-fast load times</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">📝</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Content Management</h3>
-              <p className="text-gray-600">Powered by Contentstack CMS for seamless content delivery</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🚀</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Edge & Cloud Functions</h3>
-              <p className="text-gray-600">Leveraging Contentstack Launch for advanced deployments</p>
-            </div>
+            ))}
           </div>
         </div>
 

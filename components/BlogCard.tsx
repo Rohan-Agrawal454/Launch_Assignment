@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
 interface BlogCardProps {
-  id: number;
+  id?: number | string; // Support both number and string (uid from CMS)
   title: string;
   excerpt: string;
   date: string;
-  slug: string;
+  slug?: string;
   category?: string;
   views?: number;
   trending?: boolean;

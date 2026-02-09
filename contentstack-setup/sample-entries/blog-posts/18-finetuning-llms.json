@@ -1,0 +1,11 @@
+{
+  "title": "Fine-tuning LLMs: Best Practices",
+  "slug": "finetuning-llms",
+  "excerpt": "A comprehensive guide to customizing language models",
+  "content": "<h2>LLM Fine-tuning</h2><p>Learn how to adapt pre-trained models to your specific use case.</p><h3>When to Fine-tune</h3><p>Fine-tuning is ideal when you need specialized knowledge or specific output formats.</p><h3>Techniques</h3><p>Explore methods like full fine-tuning, LoRA, and prompt tuning.</p><h3>Best Practices</h3><p>Prepare quality data, monitor for overfitting, and evaluate thoroughly.</p>",
+  "category": "GenerativeAI",
+  "post_tags": "fine-tuning, LLMs, machine learning",
+  "status": "Published",
+  "is_trending": false,
+  "view_count": 856
+}

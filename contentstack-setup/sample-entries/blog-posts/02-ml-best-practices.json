@@ -1,0 +1,11 @@
+{
+  "title": "Machine Learning Best Practices for 2026",
+  "slug": "ml-best-practices",
+  "excerpt": "Essential practices for building robust, scalable, and maintainable machine learning models in production environments.",
+  "content": "<h2>ML Best Practices</h2><p>Building production-ready machine learning systems requires careful attention to data quality, model evaluation, and deployment strategies.</p><h3>Data Quality</h3><p>Clean, well-structured data is the foundation of any successful ML project.</p><h3>Model Evaluation</h3><p>Use proper cross-validation and testing strategies to ensure your models generalize well.</p><h3>MLOps</h3><p>Implement continuous integration and deployment pipelines for your ML models.</p>",
+  "category": "AI",
+  "post_tags": "machine learning, best practices, mlops, production",
+  "status": "Published",
+  "is_trending": false,
+  "view_count": 1923
+}
