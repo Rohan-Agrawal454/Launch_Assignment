@@ -1,0 +1,55 @@
+{
+  "entries": [
+    {
+      "title": "Introduction to Generative AI: Creating the Future",
+      "slug": "intro-generative-ai-creating-future",
+      "excerpt": "Understanding how generative models create new content, from text to images, and revolutionize creative industries.",
+      "content": "<h2>What is Generative AI?</h2><p>Generative AI represents a paradigm shift in how machines create content...</p>",
+      "category": "Generative AI",
+      "published_date": "2026-02-05T11:00:00.000Z",
+      "status": "Published",
+      "is_trending": true,
+      "view_count": 3125,
+      "tags": ["generative AI", "LLMs", "image generation", "content creation"],
+      "seo_metadata": {
+        "meta_title": "Generative AI Guide: How AI Creates Content",
+        "meta_description": "Complete guide to generative AI, including text, image, and video generation technologies.",
+        "meta_keywords": ["generative AI", "AI content", "LLMs"]
+      }
+    },
+    {
+      "title": "Large Language Models Explained: Architecture and Training",
+      "slug": "llms-explained-architecture-training",
+      "excerpt": "A deep dive into LLM architecture, training methodologies, and how these models understand and generate human language.",
+      "content": "<h2>Understanding LLMs</h2><p>Large Language Models have transformed natural language processing...</p>",
+      "category": "Generative AI",
+      "published_date": "2026-02-02T09:30:00.000Z",
+      "status": "Published",
+      "is_trending": false,
+      "view_count": 2156,
+      "tags": ["LLMs", "transformers", "NLP", "deep learning"],
+      "seo_metadata": {
+        "meta_title": "LLMs Explained: Complete Guide to Language Models",
+        "meta_description": "Learn about large language model architecture, training, and applications.",
+        "meta_keywords": ["LLM", "language models", "transformers"]
+      }
+    },
+    {
+      "title": "Creative Applications of Generative AI",
+      "slug": "creative-applications-generative-ai",
+      "excerpt": "How artists, designers, and creators are leveraging generative AI to push the boundaries of creative expression.",
+      "content": "<h2>AI in Creative Industries</h2><p>Generative AI is revolutionizing art, design, and creative workflows...</p>",
+      "category": "Generative AI",
+      "published_date": "2026-01-30T15:00:00.000Z",
+      "status": "Published",
+      "is_trending": false,
+      "view_count": 1789,
+      "tags": ["AI art", "creative AI", "design", "innovation"],
+      "seo_metadata": {
+        "meta_title": "Creative AI Applications in Art and Design",
+        "meta_description": "Discover how generative AI is transforming creative industries.",
+        "meta_keywords": ["AI art", "creative AI", "generative design"]
+      }
+    }
+  ]
+}

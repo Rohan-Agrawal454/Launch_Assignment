@@ -1,0 +1,55 @@
+{
+  "entries": [
+    {
+      "title": "Introducing Google Gemini: The Multimodal AI Revolution",
+      "slug": "introducing-google-gemini-multimodal-ai",
+      "excerpt": "An in-depth look at Google's Gemini AI model and its multimodal capabilities across text, images, and more.",
+      "content": "<h2>Google Gemini Overview</h2><p>Google Gemini represents a new era in multimodal AI systems...</p>",
+      "category": "Gemini",
+      "published_date": "2026-02-07T09:00:00.000Z",
+      "status": "Published",
+      "is_trending": true,
+      "view_count": 3456,
+      "tags": ["Gemini", "Google AI", "multimodal AI", "AI models"],
+      "seo_metadata": {
+        "meta_title": "Google Gemini AI - Complete Guide to Multimodal AI",
+        "meta_description": "Learn about Google Gemini, the multimodal AI model revolutionizing technology.",
+        "meta_keywords": ["Google Gemini", "multimodal AI", "Google AI"]
+      }
+    },
+    {
+      "title": "Gemini vs GPT-4: Comparing Top AI Models",
+      "slug": "gemini-vs-gpt4-comparing-ai-models",
+      "excerpt": "A detailed comparison of Google Gemini and OpenAI's GPT-4, analyzing capabilities, use cases, and performance.",
+      "content": "<h2>AI Model Comparison</h2><p>Comparing the leading AI models helps understand their unique strengths...</p>",
+      "category": "Gemini",
+      "published_date": "2026-02-04T11:30:00.000Z",
+      "status": "Published",
+      "is_trending": false,
+      "view_count": 2345,
+      "tags": ["Gemini", "GPT-4", "AI comparison", "model evaluation"],
+      "seo_metadata": {
+        "meta_title": "Gemini vs GPT-4: Which AI Model is Better?",
+        "meta_description": "Compare Google Gemini and GPT-4 to find the best AI model for your needs.",
+        "meta_keywords": ["Gemini vs GPT-4", "AI comparison", "best AI model"]
+      }
+    },
+    {
+      "title": "Building Applications with Gemini API",
+      "slug": "building-applications-gemini-api",
+      "excerpt": "A developer's guide to integrating Google Gemini into your applications with practical examples and best practices.",
+      "content": "<h2>Gemini API Development</h2><p>Building with Gemini API opens up powerful multimodal capabilities...</p>",
+      "category": "Gemini",
+      "published_date": "2026-01-31T13:00:00.000Z",
+      "status": "Published",
+      "is_trending": false,
+      "view_count": 1654,
+      "tags": ["Gemini API", "development", "integration", "tutorial"],
+      "seo_metadata": {
+        "meta_title": "Gemini API Guide - Build AI Applications",
+        "meta_description": "Learn how to build applications with Google Gemini API.",
+        "meta_keywords": ["Gemini API", "AI development", "API integration"]
+      }
+    }
+  ]
+}
