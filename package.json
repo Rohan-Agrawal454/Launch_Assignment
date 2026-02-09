@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@contentstack/delivery-sdk": "^4.11.0",
+        "@tsndr/cloudflare-worker-jwt": "^3.2.1",
         "contentstack": "^3.26.4",
         "js-cookie": "^3.0.5",
         "next": "16.1.6",
