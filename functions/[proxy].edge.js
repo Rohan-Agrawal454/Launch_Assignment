@@ -1,6 +1,53 @@
 import jwt from '@tsndr/cloudflare-worker-jwt';
 
 export default async function handler(request, context) {
+  // ============================================
+  // IP WHITELISTING - Check before any other logic
+  // ============================================
+  
+  // Define whitelisted IPs (add your device IP here)
+  const allowedIPs = [
+    "127.0.0.1",           // Localhost IPv4
+    "::1",                 // Localhost IPv6
+    "154.84.245.58",       // Your local network IP (from terminal output)
+  ];
+  
+  // Get the client's IP address from headers
+  const clientIP = request.headers.get("x-forwarded-for") || "";
+  
+  const clientIPList = clientIP.split(",").map(ip => ip.trim());
+  
+  // Log IP for debugging
+  console.log("Client IPs:", clientIPList);
+  
+  // Check if any forwarded IP is in the allowed list
+  const allowed = clientIPList.some(ip => allowedIPs.includes(ip)) || 
+                  allowedIPs.includes(clientIPList[0]); // Check first IP in chain
+  
+  console.log("Access allowed:", allowed, "- IP:", clientIPList[0]);
+  
+  if (!allowed) {
+    console.log("Access denied - IP not in whitelist:", clientIPList[0]);
+    return new Response(
+      JSON.stringify({
+        error: "Forbidden",
+        message: "Your IP address is not in the whitelist.",
+        your_ip: clientIPList[0],
+        timestamp: new Date().toISOString()
+      }), 
+      { 
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+  }
+  
+  // ============================================
+  // OAUTH SSO AUTHENTICATION (for /author-tools)
+  // ============================================
+  
   const oauthCredentials = {
     OAUTH_CLIENT_ID: context.env.OAUTH_CLIENT_ID,
     OAUTH_CLIENT_SECRET: context.env.OAUTH_CLIENT_SECRET,
