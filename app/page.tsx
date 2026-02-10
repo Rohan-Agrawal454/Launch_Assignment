@@ -55,7 +55,7 @@ export default async function Home() {
   // If CMS data is not available, show loading or fallback
   if (!homepage) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h1>
           <p className="text-gray-600">Fetching content from CMS</p>
@@ -65,7 +65,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
       <Navbar />
 
       {/* Language Switcher - Fixed Position */}
@@ -110,7 +110,7 @@ export default async function Home() {
                 style={{animationDelay: `${index * 0.1}s`}}
               >
                 <div className={`bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border ${colors.border}`}>
-                  <div className={`w-14 h-14 bg-gradient-to-br ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm`}>
+                  <div className={`w-14 h-14 bg-linear-to-br ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm`}>
                     <span className="text-3xl">{category.icon}</span>
                   </div>
                   <h3 className={`text-xl font-semibold text-gray-900 mb-2 group-hover:${colors.text} transition-colors`}>
@@ -150,13 +150,13 @@ export default async function Home() {
 
         {/* Tools Section */}
         <div className="grid md:grid-cols-2 gap-6">
-          <a href="/author-tools" className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow">
+          <a href="/author-tools" className="bg-linear-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow">
             <h3 className="text-2xl font-bold mb-2">Author Tools</h3>
             <p className="mb-4 opacity-90">Access writing resources, manage drafts, and track your content performance</p>
             <span className="text-blue-100 font-medium">Explore Tools →</span>
           </a>
 
-          <a href="/editor-dashboard" className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow">
+          <a href="/editor-dashboard" className="bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow">
             <h3 className="text-2xl font-bold mb-2">Editor Dashboard</h3>
             <p className="mb-4 opacity-90">Review submissions, manage publications, and oversee content quality</p>
             <span className="text-purple-100 font-medium">Open Dashboard →</span>

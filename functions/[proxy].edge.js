@@ -53,6 +53,8 @@ export default async function handler(request, context) {
   const testDomains = [
     "launchassignment-preview.contentstackapps.com"
   ];
+
+  const hostname = request.url.hostname;
   
   // Check if this is a production domain
   const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
@@ -70,7 +72,7 @@ export default async function handler(request, context) {
   } else if (url.pathname === '/latest' && !isProductionDomain) {
     console.log(`[Rewrite] Skipping rewrite on test/preview domain: ${hostname}`);
   }
-  
+
   // ============================================
   // OAUTH SSO AUTHENTICATION (for /author-tools)
   // ============================================
