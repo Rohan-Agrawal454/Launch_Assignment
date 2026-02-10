@@ -4,11 +4,14 @@
       "source": "/blog/ai",
       "destination": "/blog/latest"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/latest",
-      "destination": "/blog/latest"
-    }
   ]
+  
+  /* This will rewrite on all the enviroments, but we need for prodcution environemt only
+     so we need to shift this thing to edge function */
+  // "rewrites": [
+  //   {
+  //     "source": "/latest",
+  //     "destination": "/blog/latest"
+  //   }
+  // ]
 }

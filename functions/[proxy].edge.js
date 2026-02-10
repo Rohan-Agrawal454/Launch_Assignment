@@ -19,9 +19,6 @@ export default async function handler(request, context) {
   
   const clientIPList = clientIP.split(",").map(ip => ip.trim());
   
-  // Log IP for debugging
-  console.log("Client IPs:", clientIPList);
-  
   // Check if any forwarded IP is in the allowed list
   const allowed = clientIPList.some(ip => allowedIPs.includes(ip)) || 
                   allowedIPs.includes(clientIPList[0]); // Check first IP in chain
@@ -47,6 +44,33 @@ export default async function handler(request, context) {
   }
   return fetch(request);
   }
+
+  // ============================================
+  // REWRITE LOGIC - ONLY for production domain
+  // ============================================
+  
+  // Define test/preview domains (where rewrite should NOT apply)
+  const testDomains = [
+    "launchassignment-preview.contentstackapps.com"
+  ];
+  
+  // Check if this is a production domain
+  const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
+  
+  // Rewrite /latest → /blog/latest (only on production)
+  if (url.pathname === '/latest' && isProductionDomain) {
+    console.log(`[Rewrite] Applying rewrite: /latest → /blog/latest on production domain: ${hostname}`);
+    
+    // Create new URL with rewritten path
+    const rewriteUrl = new URL(request.url);
+    rewriteUrl.pathname = '/blog/latest';
+    
+    // Fetch the rewritten URL
+    return fetch(new Request(rewriteUrl, request));
+  } else if (url.pathname === '/latest' && !isProductionDomain) {
+    console.log(`[Rewrite] Skipping rewrite on test/preview domain: ${hostname}`);
+  }
+  
   // ============================================
   // OAUTH SSO AUTHENTICATION (for /author-tools)
   // ============================================
