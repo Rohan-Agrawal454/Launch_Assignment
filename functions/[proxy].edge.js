@@ -4,104 +4,98 @@ export default async function handler(request, context) {
 
   const url = new URL(request.url);
   const hostname = url.hostname;
+  const pathname = url.pathname;
 
   // ============================================
-  // IP WHITELISTING - Check before any other logic
+  // SMART CACHING POLICY (TOP LEVEL)
   // ============================================
-  
-  // Define whitelisted IPs (add your device IP here)
+
+  let cacheControl = null;
+
+  if (pathname === "/blog/latest") {
+    cacheControl = "public, max-age=30, stale-while-revalidate=30";
+  }
+  else if (pathname.startsWith("/blog/") && pathname !== "/blog/latest") {
+    cacheControl = "public, max-age=600, stale-while-revalidate=300";
+  }
+  else if (pathname.startsWith("/cdn-assets/")) {
+    cacheControl = "public, max-age=86400";
+  }
+
+  // ============================================
+  // IP WHITELISTING (ONLY FOR /editor-dashboard)
+  // ============================================
+
   if (request.url.includes('/editor-dashboard')) {
-  const allowedIPs = [
-    "127.0.0.1",           // Localhost IPv4
-    "::1",                 // Localhost IPv6
-    "154.84.245.58",       // Your local network IP (from terminal output)
-    "27.107.90.206",       
-  ];
-  
-  // Get the client's IP address from headers
-  const clientIP = request.headers.get("x-forwarded-for") || "";
-  
-  const clientIPList = clientIP.split(",").map(ip => ip.trim());
-  
-  // Check if any forwarded IP is in the allowed list
-  const allowed = clientIPList.some(ip => allowedIPs.includes(ip)) || 
-                  allowedIPs.includes(clientIPList[0]); // Check first IP in chain
-  
-  console.log("Access allowed:", allowed, "- IP:", clientIPList[0]);
-  
-  if (!allowed) {
-    console.log("Access denied - IP not in whitelist:", clientIPList[0]);
-    return new Response(
-      JSON.stringify({
-        error: "Forbidden",
-        message: "Your IP address is not in the whitelist.",
-        your_ip: clientIPList[0],
-        timestamp: new Date().toISOString()
-      }), 
-      { 
-        status: 403,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-  }
-  return fetch(request);
+
+    const allowedIPs = [
+      "127.0.0.1",
+      "::1",
+      "154.84.245.58",
+      "27.107.90.206"
+    ];
+
+    const clientIP = request.headers.get("x-forwarded-for") || "";
+    const clientIPList = clientIP.split(",").map(ip => ip.trim());
+
+    const allowed = clientIPList.some(ip => allowedIPs.includes(ip));
+
+    if (!allowed) {
+      return new Response(
+        JSON.stringify({
+          error: "Forbidden",
+          message: "Your IP address is not in the whitelist.",
+          your_ip: clientIPList[0],
+          timestamp: new Date().toISOString()
+        }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return fetchWithCache(request, cacheControl);
   }
 
   // ============================================
-  // REWRITE LOGIC - ONLY for production domain
+  // REWRITE LOGIC - ONLY FOR PRODUCTION DOMAIN
   // ============================================
-  
-  // Define test/preview domains (where rewrite should NOT apply)
+
   const testDomains = [
     "launchassignment-preview.contentstackapps.com"
   ];
-  
-  // Check if this is a production domain
-  const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
-  
-  // Rewrite /latest → /blog/latest (only on production)
-  if (url.pathname === '/latest' && isProductionDomain) {
-    console.log(`[Rewrite] Applying rewrite: /latest → /blog/latest on production domain: ${hostname}`);
-    
-    // Create new URL with rewritten path
+
+  const isProductionDomain =
+    !testDomains.some(domain => hostname.includes(domain));
+
+  if (pathname === "/latest" && isProductionDomain) {
     const rewriteUrl = new URL(request.url);
-    rewriteUrl.pathname = '/blog/latest';
-    
-    // Fetch the rewritten URL
-    return fetch(new Request(rewriteUrl, request));
-  } else if (url.pathname === '/latest' && !isProductionDomain) {
-    console.log(`[Rewrite] Skipping rewrite on test/preview domain: ${hostname}`);
+    rewriteUrl.pathname = "/blog/latest";
+    return fetchWithCache(new Request(rewriteUrl, request), cacheControl);
   }
 
   // ============================================
-  // CDN ASSETS PROXY + IMAGE OPTIMIZATION
+  // CDN ASSET REWRITE (/cdn-assets/logo.png)
   // ============================================
 
-  if (url.pathname === "/cdn-assets/logo.png") {
+  if (pathname === "/cdn-assets/logo.png") {
 
     const targetImage =
       "https://images.contentstack.io/v3/assets/bltd932e43f7244d14c/blt4d63bba14a3eb134/698ad8274825d0249b494048/logo.png";
-  
-    console.log("[CDN REWRITE] /cdn-assets/logo.png → Contentstack Image");
-  
+
     const res = await fetch(targetImage);
-  
-    // Return image as-is but keep original URL in browser
+
     return new Response(res.body, {
       status: 200,
       headers: {
         "Content-Type": res.headers.get("Content-Type") || "image/png",
-        "Cache-Control": "public, max-age=86400"
+        "Cache-Control": cacheControl || "public, max-age=86400"
       }
     });
   }
 
   // ============================================
-  // OAUTH SSO AUTHENTICATION (for /author-tools)
+  // OAUTH CREDENTIALS
   // ============================================
-  
+
   const oauthCredentials = {
     OAUTH_CLIENT_ID: context.env.OAUTH_CLIENT_ID,
     OAUTH_CLIENT_SECRET: context.env.OAUTH_CLIENT_SECRET,
@@ -109,81 +103,89 @@ export default async function handler(request, context) {
     OAUTH_TOKEN_URL: context.env.OAUTH_TOKEN_URL
   };
 
-  // Skip authentication for static assets
-  if (request.url.includes('_next') || request.url.includes('favicon.ico')) {
-    return fetch(request);
+  // Skip auth for static assets
+  if (request.url.includes("_next") || request.url.includes("favicon.ico")) {
+    return fetchWithCache(request, cacheControl);
   }
 
-  // Allow login page without authentication
-  if (request.url.includes('/login')) {
-    return fetch(request);
+  // Allow login page
+  if (request.url.includes("/login")) {
+    return fetchWithCache(request, cacheControl);
   }
 
   // Handle OAuth callback
-  if (request.url.includes('/oauth/callback')) {
-    const authCode = url.searchParams.get('code');
+  if (request.url.includes("/oauth/callback")) {
+    const authCode = url.searchParams.get("code");
+
     if (authCode) {
       const tokens = await exchangeAuthCodeForTokens(authCode, oauthCredentials);
       const jwtToken = await createJwtToken(tokens, oauthCredentials);
-      const response = redirectTo('/author-tools');
-      const modifiedResponse = setCookie(response, 'jwt', jwtToken);
-      return modifiedResponse;
+      const response = redirectTo("/author-tools");
+      return setCookie(response, "jwt", jwtToken);
     }
   }
 
-  // ⭐ ONLY protect /author-tools route
-  if (!request.url.includes('/author-tools')) {
-    // Not a protected route → Allow access
-    return fetch(request);
+  // Allow all non-protected routes
+  if (!request.url.includes("/author-tools")) {
+    return fetchWithCache(request, cacheControl);
   }
 
-  // /author-tools requires authentication - check for JWT token
-  const cookies = parseCookies(request.headers.get('cookie') || '');
-  const jwtToken = cookies['jwt'];
+  // ============================================
+  // PROTECT /author-tools WITH JWT
+  // ============================================
+
+  const cookies = parseCookies(request.headers.get("cookie") || "");
+  const jwtToken = cookies["jwt"];
 
   if (jwtToken) {
     try {
-      const verified = await jwt.verify(jwtToken, oauthCredentials.OAUTH_CLIENT_SECRET);
-      if (verified) {
-        // Valid token → Allow access to /author-tools
-        return fetch(request);
-      } else {
-        const decoded = jwt.decode(jwtToken);
-        if (decoded.payload.exp < timeNow()) {
-          // Token expired → Try to refresh
-          const newToken = await refreshJwtToken(decoded.payload.refreshToken, oauthCredentials);
+      const verified = await jwt.verify(
+        jwtToken,
+        oauthCredentials.OAUTH_CLIENT_SECRET
+      );
 
-          const response = await fetch(request);
-          const modifiedResponse = setCookie(response, 'jwt', newToken);
-          return modifiedResponse;
-        }
+      if (verified) {
+        return fetchWithCache(request, cacheControl);
       }
     } catch (err) {
-      console.log(err);
+      console.log("JWT error:", err);
       return redirectToLogin();
     }
   }
-  
-  // No valid token → Redirect to login
+
   return redirectToLogin();
 }
 
+// =====================
+// HELPER FUNCTIONS
+// =====================
+
+async function fetchWithCache(request, cacheControl) {
+  const response = await fetch(request);
+
+  if (!cacheControl) return response;
+
+  const modified = new Response(response.body, response);
+  modified.headers.set("Cache-Control", cacheControl);
+  return modified;
+}
+
 function parseCookies(cookieString) {
-  return cookieString.split(';').reduce((acc, cookie) => {
-    const [key, value] = cookie.split('=').map(c => c.trim());
+  return cookieString.split(";").reduce((acc, cookie) => {
+    const [key, value] = cookie.split("=").map(c => c.trim());
     acc[key] = value;
     return acc;
   }, {});
 }
 
 function setCookie(response, name, value) {
-  const modifiedResponse = new Response(response.body, response);
-  modifiedResponse.headers.set('Set-Cookie', `${name}=${value}; Path=/; HttpOnly`);
-  return modifiedResponse;
+  const modified = new Response(response.body, response);
+  modified.headers.set("Set-Cookie", `${name}=${value}; Path=/; HttpOnly`);
+  return modified;
 }
 
 function redirectToLogin() {
-  return redirectTo('/login');
+  return redirectTo("/login");
 }
 
 function timeNow() {
@@ -191,54 +193,34 @@ function timeNow() {
 }
 
 function redirectTo(path) {
-  const response = new Response(undefined, {
+  return new Response(null, {
     status: 307,
-    headers: {
-      'Location': path
-    }
+    headers: { Location: path }
   });
-  return response;
 }
 
-async function exchangeAuthCodeForTokens(authCode, oauthCredentials) {
-  const response = await fetch(oauthCredentials.OAUTH_TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+async function exchangeAuthCodeForTokens(authCode, creds) {
+  const res = await fetch(creds.OAUTH_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      client_id: oauthCredentials.OAUTH_CLIENT_ID,
-      client_secret: oauthCredentials.OAUTH_CLIENT_SECRET,
+      client_id: creds.OAUTH_CLIENT_ID,
+      client_secret: creds.OAUTH_CLIENT_SECRET,
       code: authCode,
-      redirect_uri: oauthCredentials.OAUTH_REDIRECT_URI,
-      grant_type: 'authorization_code'
+      redirect_uri: creds.OAUTH_REDIRECT_URI,
+      grant_type: "authorization_code"
     })
   });
-  const tokens = response.json();
-  if (!response.ok) {
-    throw new Error(tokens);
-  }
 
-  return tokens;
+  const data = await res.json();
+  if (!res.ok) throw new Error(data);
+  return data;
 }
 
-async function createJwtToken({ access_token, refresh_token, expires_in }, oauthCredentials) {
+async function createJwtToken({ access_token, refresh_token, expires_in }, creds) {
   const exp = timeNow() + expires_in;
-  return jwt.sign({ accessToken: access_token, refreshToken: refresh_token, exp }, oauthCredentials.OAUTH_CLIENT_SECRET);
-}
-
-async function refreshJwtToken(refreshToken, oauthCredentials) {
-  const response = await fetch(oauthCredentials.OAUTH_TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: oauthCredentials.OAUTH_CLIENT_ID,
-      client_secret: oauthCredentials.OAUTH_CLIENT_SECRET,
-      refresh_token: refreshToken,
-      grant_type: 'refresh_token'
-    })
-  });
-  const tokens = await response.json();
-  if (!response.ok) {
-    throw new Error(tokens);
-  }
-  return createJwtToken(tokens, oauthCredentials);
+  return jwt.sign(
+    { accessToken: access_token, refreshToken: refresh_token, exp },
+    creds.OAUTH_CLIENT_SECRET
+  );
 }
