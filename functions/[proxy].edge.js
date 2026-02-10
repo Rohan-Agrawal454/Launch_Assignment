@@ -23,6 +23,40 @@ export default async function handler(request, context) {
   }
 
   // ============================================
+  // TRIGGER CONTENTSTACK AUTOMATE FROM BUTTON
+  // ============================================
+
+  if (url.pathname === "/automate/trigger" && request.method === "POST") {
+
+    const pathToRevalidate = url.searchParams.get("path");
+
+    if (!pathToRevalidate) {
+      return new Response(
+        JSON.stringify({ error: "Missing path parameter" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("[AUTOMATE] Triggering webhook for:", pathToRevalidate);
+
+    await fetch(
+      "https://app.contentstack.com/automations-api/run/d457657f24f847458b7d62c48008228a",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: pathToRevalidate })
+      }
+    );
+
+    return new Response(
+      JSON.stringify({
+        message: `Automate triggered for ${pathToRevalidate}`
+      }),
+      { headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // ============================================
   // IP WHITELISTING (ONLY FOR /editor-dashboard)
   // ============================================
 

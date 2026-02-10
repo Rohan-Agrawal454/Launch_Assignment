@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RenderingBadge from "@/components/RenderingBadge";
 import BlogCard from "@/components/BlogCard";
+import RevalidateCacheButton from "@/components/RevalidateCacheButton";
 import { getBlogPostsByCategory } from "@/lib/contentstack";
 
 export const metadata: Metadata = {
@@ -15,7 +16,10 @@ export default async function GenerativeAIPage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Generative AI</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold text-gray-900">Generative AI</h1>
+        <RevalidateCacheButton />
+      </div>
       <p className="text-lg text-gray-600 mb-8">
         Explore the cutting-edge world of generative AI, from language models to image generation.
       </p>
