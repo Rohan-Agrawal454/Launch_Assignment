@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description: "Latest articles on generative AI, LLMs, and creative AI applications",
 };
 
-// Server-Side Rendering (SSR) - Revalidate every request
-export const dynamic = 'force-dynamic';
+// Incremental Static Regeneration (ISR) - Revalidate every 60 seconds
+export const revalidate = 60;
 
 export default async function GenerativeAIPage() {
   // Fetch posts from Contentstack (category is "GenerativeAI" in CMS)
