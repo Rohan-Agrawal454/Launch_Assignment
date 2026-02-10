@@ -2,10 +2,12 @@
   "redirects": [
     {
       "source": "/blog/ai",
-      "destination": "/blog/latest"
+      "destination": "/blog/latest",
+      "statuscode" : 307
     }
   ]
-  
+}
+
   /* This will rewrite on all the enviroments, but we need for prodcution environemt only
      so we need to shift this thing to edge function */
   // "rewrites": [
@@ -14,4 +16,3 @@
   //     "destination": "/blog/latest"
   //   }
   // ]
-}
