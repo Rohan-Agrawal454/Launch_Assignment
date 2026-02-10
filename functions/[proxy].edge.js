@@ -76,6 +76,29 @@ export default async function handler(request, context) {
   }
 
   // ============================================
+  // CDN ASSETS PROXY + IMAGE OPTIMIZATION
+  // ============================================
+
+  if (url.pathname === "/cdn-assets/logo.png") {
+
+    const targetImage =
+      "https://images.contentstack.io/v3/assets/bltd932e43f7244d14c/blt4d63bba14a3eb134/698ad8274825d0249b494048/logo.png";
+  
+    console.log("[CDN REWRITE] /cdn-assets/logo.png → Contentstack Image");
+  
+    const res = await fetch(targetImage);
+  
+    // Return image as-is but keep original URL in browser
+    return new Response(res.body, {
+      status: 200,
+      headers: {
+        "Content-Type": res.headers.get("Content-Type") || "image/png",
+        "Cache-Control": "public, max-age=86400"
+      }
+    });
+  }
+
+  // ============================================
   // OAUTH SSO AUTHENTICATION (for /author-tools)
   // ============================================
   
