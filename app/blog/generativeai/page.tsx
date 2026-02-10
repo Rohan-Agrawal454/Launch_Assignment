@@ -9,7 +9,9 @@ export const metadata: Metadata = {
   description: "Latest articles on generative AI, LLMs, and creative AI applications",
 };
 
-// Static Site Generation (SSG) - Evergreen content
+// Incremental Static Regeneration (ISR) - Revalidate every 10 minutes
+export const revalidate = 600;
+
 export default async function GenerativeAIPage() {
   // Fetch posts from Contentstack (category is "GenerativeAI" in CMS)
   const posts = await getBlogPostsByCategory('GenerativeAI');
@@ -47,7 +49,7 @@ export default async function GenerativeAIPage() {
         </div>
       )}
 
-      <RenderingBadge strategy="SSG" />
+      <RenderingBadge strategy="ISR" />
     </div>
   );
 }
