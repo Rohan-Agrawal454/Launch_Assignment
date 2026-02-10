@@ -11,6 +11,7 @@ export default async function handler(request, context) {
     "127.0.0.1",           // Localhost IPv4
     "::1",                 // Localhost IPv6
     "154.84.245.58",       // Your local network IP (from terminal output)
+    "27.107.90.206",       
   ];
   
   // Get the client's IP address from headers
