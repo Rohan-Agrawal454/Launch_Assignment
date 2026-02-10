@@ -128,7 +128,7 @@ export async function getHomepage(locale: string = 'en-us'): Promise<Homepage | 
  * @param limit - Maximum number of posts to fetch
  * @returns Array of blog posts
  */
-export async function getAllBlogPosts(limit: number = 5): Promise<BlogPost[]> {
+export async function getAllBlogPosts(limit: number): Promise<BlogPost[]> {
   try {
     console.log('🔵 Fetching all blog posts from Contentstack...');
     const result = await Stack.contentType('blog_post')
