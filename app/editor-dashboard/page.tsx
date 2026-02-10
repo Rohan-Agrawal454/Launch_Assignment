@@ -67,7 +67,7 @@ export default async function EditorDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-purple-50/30">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
@@ -79,27 +79,27 @@ export default async function EditorDashboardPage() {
 
         {/* Dashboard Stats */}
         <div className="grid gap-6 md:grid-cols-4 mb-8">
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-orange-200 group cursor-pointer">
+          <div className="bg-linear-to-br from-orange-50 to-orange-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-orange-200 group cursor-pointer">
             <h3 className="text-sm font-semibold text-orange-700 mb-1">Pending Review</h3>
-            <p className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mt-2">{dashboardStats.pendingReview}</p>
+            <p className="text-4xl font-bold bg-linear-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mt-2">{dashboardStats.pendingReview}</p>
             <div className="mt-2 text-xs text-orange-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
               <span className="inline-block w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
               Needs attention
             </div>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-blue-200 group cursor-pointer">
+          <div className="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-blue-200 group cursor-pointer">
             <h3 className="text-sm font-semibold text-blue-700 mb-1">Scheduled Posts</h3>
-            <p className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2">{dashboardStats.scheduledPosts}</p>
+            <p className="text-4xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mt-2">{dashboardStats.scheduledPosts}</p>
             <div className="mt-2 text-xs text-blue-600 group-hover:translate-x-1 transition-transform">View calendar →</div>
           </div>
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-gray-200 group cursor-pointer">
+          <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-gray-200 group cursor-pointer">
             <h3 className="text-sm font-semibold text-gray-700 mb-1">Active Authors</h3>
-            <p className="text-4xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent mt-2">{dashboardStats.totalAuthors}</p>
+            <p className="text-4xl font-bold bg-linear-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent mt-2">{dashboardStats.totalAuthors}</p>
             <div className="mt-2 text-xs text-gray-600 group-hover:translate-x-1 transition-transform">Manage authors →</div>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-green-200 group cursor-pointer">
+          <div className="bg-linear-to-br from-green-50 to-green-100 rounded-xl shadow-md p-6 hover:shadow-lg transition-all border border-green-200 group cursor-pointer">
             <h3 className="text-sm font-semibold text-green-700 mb-1">Published Today</h3>
-            <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mt-2">{dashboardStats.publishedToday}</p>
+            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mt-2">{dashboardStats.publishedToday}</p>
             <div className="mt-2 text-xs text-green-600 group-hover:translate-x-1 transition-transform">View posts →</div>
           </div>
         </div>

@@ -1,6 +1,10 @@
 import jwt from '@tsndr/cloudflare-worker-jwt';
 
 export default async function handler(request, context) {
+
+  const url = new URL(request.url);
+  const hostname = url.hostname;
+
   // ============================================
   // IP WHITELISTING - Check before any other logic
   // ============================================
@@ -53,8 +57,6 @@ export default async function handler(request, context) {
   const testDomains = [
     "launchassignment-preview.contentstackapps.com"
   ];
-
-  const hostname = request.url.hostname;
   
   // Check if this is a production domain
   const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
@@ -83,8 +85,6 @@ export default async function handler(request, context) {
     OAUTH_REDIRECT_URI: context.env.OAUTH_REDIRECT_URI,
     OAUTH_TOKEN_URL: context.env.OAUTH_TOKEN_URL
   };
-
-  const url = new URL(request.url);
 
   // Skip authentication for static assets
   if (request.url.includes('_next') || request.url.includes('favicon.ico')) {
