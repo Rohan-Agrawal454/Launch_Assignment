@@ -2,24 +2,13 @@
   "redirects": [
     {
       "source": "/blog/ai",
-      "destination": "/blog/latest",
-      "type": "temporary",
-      "status": 307,
-      "description": "Temporary redirect from AI blog to Neuralink blog"
+      "destination": "/blog/latest"
     }
   ],
   "rewrites": [
     {
       "source": "/latest",
-      "destination": "/blog/latest",
-      "description": "Rewrite /latest to /blog/latest with pagination parameter",
-      "conditions": {
-        "host": {
-          "exclude": [
-            "launchassignment-preview.contentstackapps.com"
-          ]
-        }
-      }
+      "destination": "/blog/latest"
     }
   ]
 }
