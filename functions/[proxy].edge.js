@@ -15,7 +15,7 @@ export default async function handler(request, context) {
   if (pathname === "/blog/latest") {
     cacheControl = "public, max-age=30, stale-while-revalidate=30";
   }
-  else if (pathname.startsWith("/blog/") && pathname !== "/blog/latest") {
+  else if (pathname.startsWith("/blog/") && pathname !== "/blog/latest" && pathname !== "/blog/generativeai") {
     cacheControl = "public, max-age=600, stale-while-revalidate=300";
   }
   else if (pathname.startsWith("/cdn-assets/")) {

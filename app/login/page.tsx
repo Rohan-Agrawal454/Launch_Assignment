@@ -13,10 +13,13 @@ export default function Login() {
           priority
         />
 
-      <a
-        href={`${process.env.NEXT_PUBLIC_OAUTH_AUTHORIZE_URL}?client_id=${process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI}&response_type=code`}
-        className="login-btn"
-      >
+          <a 
+          href={`${process.env.NEXT_PUBLIC_OAUTH_AUTHORIZE_URL}
+          ?client_id=${process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID}
+          &redirect_uri=${process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI}
+          &response_type=code`}
+          className="login-btn"
+          >
           Log In
         </a>
       </div>

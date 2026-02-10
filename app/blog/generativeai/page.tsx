@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description: "Latest articles on generative AI, LLMs, and creative AI applications",
 };
 
-// Incremental Static Regeneration (ISR) - Revalidate every 60 seconds
-export const revalidate = 60;
+// Incremental Static Regeneration (ISR) - Revalidate every 10 seconds
+export const revalidate = 10;
 
 export default async function GenerativeAIPage() {
   // Fetch posts from Contentstack (category is "GenerativeAI" in CMS)
