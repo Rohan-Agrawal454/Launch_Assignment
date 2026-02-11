@@ -1,0 +1,17 @@
+{
+  "command": "config:get:region",
+  "module": "region",
+  "userId": "bc0647e6-caab-58ae-8336-cd87c656d6c5",
+  "email": "rohan.agrawal@contentstack.com",
+  "sessionId": "j1pcvATRUMJWcjBnEiV59F",
+  "apiKey": "blta1a25f87b600d64d",
+  "orgId": "",
+  "authenticationMethod": "Basic Auth",
+  "startTimestamp": "2026-02-11T07:28:28.029Z",
+  "MachineEnvironment": {
+    "nodeVersion": "v24.12.0",
+    "os": "darwin",
+    "hostname": "RohanAgrawal-Mac",
+    "CLI_VERSION": "1.55.1"
+  }
+}

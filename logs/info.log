@@ -1,0 +1,31 @@
+{"level":"info","message":"GitHub connection identified!"}
+{"level":"info","message":"User access verified"}
+{"level":"info","message":"GitHub connection identified!"}
+{"level":"info","message":"User access verified"}
+{"level":"info","message":"Skipped adding environment variables."}
+{"level":"info","message":"New project created successfully"}
+{"level":"info","message":"2026-02-11 07:25:59.671:  Cloning repository..."}
+{"level":"info","message":"2026-02-11 07:26:06.310:  Installing dependencies..."}
+{"level":"info","message":"2026-02-11 07:26:11.299:  =========================================================="}
+{"level":"info","message":"2026-02-11 07:26:11.309:  Current Node.js Version: v22.22.0"}
+{"level":"info","message":"2026-02-11 07:26:11.312:  =========================================================="}
+{"level":"info","message":"2026-02-11 07:26:26.988:  added 387 packages, and audited 388 packages in 16s"}
+{"level":"info","message":"2026-02-11 07:26:26.998:  npm notice"}
+{"level":"info","message":"2026-02-11 07:26:27.001:  npm notice New minor version of npm available! 11.7.0 -> 11.9.0"}
+{"level":"info","message":"2026-02-11 07:26:27.003:  npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.9.0"}
+{"level":"info","message":"2026-02-11 07:26:27.005:  npm notice To update run: npm install -g npm@11.9.0"}
+{"level":"info","message":"2026-02-11 07:26:27.007:  npm notice"}
+{"level":"info","message":"2026-02-11 07:26:35.169:  Init build..."}
+{"level":"info","message":"2026-02-11 07:26:36.671:  > blog@0.1.0 build"}
+{"level":"info","message":"2026-02-11 07:26:36.674:  > next build"}
+{"level":"info","message":"2026-02-11 07:26:37.951:  Attention: Next.js now collects completely anonymous telemetry regarding usage."}
+{"level":"info","message":"2026-02-11 07:26:37.954:  This information is used to shape Next.js' roadmap and prioritize features."}
+{"level":"info","message":"2026-02-11 07:26:37.956:  You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:"}
+{"level":"info","message":"2026-02-11 07:26:37.958:  https://nextjs.org/telemetry"}
+{"level":"info","message":"2026-02-11 07:26:37.974:  ▲ Next.js 16.1.6 (Turbopack)"}
+{"level":"info","message":"2026-02-11 07:26:37.977:  - Experiments (use with caution):"}
+{"level":"info","message":"2026-02-11 07:26:37.979:    · serverActions"}
+{"level":"info","message":"2026-02-11 07:26:38.051:    Creating an optimized production build ..."}
+{"level":"info","message":"2026-02-11 07:26:44.527:  ✓ Compiled successfully in 5.8s"}
+{"level":"info","message":"2026-02-11 07:26:44.554:    Running TypeScript ..."}
+{"level":"info","message":"2026-02-11 07:26:47.423:    Collecting page data using 15 workers ..."}

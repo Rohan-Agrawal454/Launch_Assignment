@@ -7,6 +7,24 @@ export default async function handler(request, context) {
   const pathname = url.pathname;
 
   // ============================================
+  // LOCALE DETECTION (BASED ON COUNTRY & LANGUAGE)
+  // ============================================
+
+  /*
+  const acceptLanguage = request.headers.get("accept-language") || "en";
+  const country = request.headers.get("visitor-ip-country") || "US";
+
+  let locale = acceptLanguage.split(",")[0].split("-")[0]; // "fr", "en", "ja"
+
+  // Override locale based on country
+  if (country === "FR") locale = "fr";
+  if (country === "JP") locale = "ja";
+  if (country === "IN") locale = "en";
+
+  console.log(`[LOCALE] Detected country: ${country}, locale: ${locale}`);
+  */
+
+  // ============================================
   // SMART CACHING POLICY (TOP LEVEL)
   // ============================================
 
