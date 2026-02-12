@@ -11,7 +11,7 @@ export default async function handler(request, context) {
   // ============================================
 
   const testDomains = [
-    "launchassignment-preview.contentstackapps.com"
+    "launchassignment-test.contentstackapps.com"
   ];
 
   const USERNAME = context.env.BASIC_AUTH_USER || "admin";
@@ -19,18 +19,39 @@ export default async function handler(request, context) {
 
   const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
 
+  console.log(`[AUTH] Domain: ${hostname}, IsProduction: ${isProductionDomain}`);
+
   // Password-protect root route on non-production domains
   if (pathname === "/" && !isProductionDomain) {
     const auth = request.headers.get("authorization");
+    
+    console.log(`[AUTH] Authorization header: ${auth ? 'Present' : 'Missing'}`);
 
-    if (!auth || !isBasicAuthValid(auth, USERNAME, PASSWORD)) {
+    if (!auth) {
+      console.log(`[AUTH] No auth header, prompting for credentials`);
       return new Response("Unauthorized", {
         status: 401,
         headers: {
-          "WWW-Authenticate": 'Basic realm="Protected Page"',
+          "WWW-Authenticate": 'Basic realm="Protected Site"',
+          "Content-Type": "text/plain"
         },
       });
     }
+
+    const isValid = isBasicAuthValid(auth, USERNAME, PASSWORD);
+    console.log(`[AUTH] Credentials valid: ${isValid}`);
+
+    if (!isValid) {
+      return new Response("Invalid credentials", {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Basic realm="Protected Site"',
+          "Content-Type": "text/plain"
+        },
+      });
+    }
+
+    console.log(`[AUTH] Authentication successful, proceeding...`);
   }
 
   // ============================================
@@ -247,18 +268,77 @@ export default async function handler(request, context) {
 
 function isBasicAuthValid(authHeader, username, password) {
   try {
-    const base64Credentials = authHeader.split(" ")[1];
-    if (!base64Credentials) return false;
+    console.log(`[AUTH] Validating auth header...`);
     
-    // Use atob for base64 decoding (works in edge/worker environments)
-    const decoded = atob(base64Credentials);
-    const [user, pass] = decoded.split(":");
+    // Expected format: "Basic <base64>"
+    const parts = authHeader.split(" ");
+    if (parts.length !== 2 || parts[0] !== "Basic") {
+      console.log(`[AUTH] Invalid auth header format`);
+      return false;
+    }
+
+    const base64Credentials = parts[1];
+    console.log(`[AUTH] Base64 credentials length: ${base64Credentials.length}`);
+    
+    // Decode base64 - try different methods for edge environment
+    let decoded;
+    try {
+      // Try atob first (standard in web environments)
+      decoded = atob(base64Credentials);
+    } catch {
+      try {
+        // Fallback: manual base64 decode for edge environments
+        decoded = decodeBase64(base64Credentials);
+      } catch (e2) {
+        console.error("[AUTH] Failed to decode base64:", e2);
+        return false;
+      }
+    }
+    
+    console.log(`[AUTH] Decoded credentials (length: ${decoded.length})`);
+    
+    const colonIndex = decoded.indexOf(":");
+    if (colonIndex === -1) {
+      console.log(`[AUTH] No colon separator found in credentials`);
+      return false;
+    }
+    
+    const user = decoded.substring(0, colonIndex);
+    const pass = decoded.substring(colonIndex + 1);
+    
+    console.log(`[AUTH] Parsed username: "${user}" (expected: "${username}")`);
+    console.log(`[AUTH] Password match: ${pass === password}`);
     
     return user === username && pass === password;
   } catch (error) {
     console.error("[AUTH] Error validating credentials:", error);
     return false;
   }
+}
+
+// Fallback base64 decoder for edge environments
+function decodeBase64(str) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let output = '';
+  
+  str = str.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+  
+  for (let i = 0; i < str.length; i += 4) {
+    const enc1 = chars.indexOf(str.charAt(i));
+    const enc2 = chars.indexOf(str.charAt(i + 1));
+    const enc3 = chars.indexOf(str.charAt(i + 2));
+    const enc4 = chars.indexOf(str.charAt(i + 3));
+    
+    const chr1 = (enc1 << 2) | (enc2 >> 4);
+    const chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+    const chr3 = ((enc3 & 3) << 6) | enc4;
+    
+    output += String.fromCharCode(chr1);
+    if (enc3 !== 64) output += String.fromCharCode(chr2);
+    if (enc4 !== 64) output += String.fromCharCode(chr3);
+  }
+  
+  return output;
 }
 
 async function fetchWithCache(request, cacheControl) {
