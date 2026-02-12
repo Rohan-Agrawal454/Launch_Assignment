@@ -14,21 +14,16 @@ export default async function handler(request, context) {
     "launchassignment-test.contentstackapps.com"
   ];
 
-  const USERNAME = context.env.BASIC_AUTH_USER || "admin";
-  const PASSWORD = context.env.BASIC_AUTH_PASS || "supersecret";
+  const USERNAME = context.env.BASIC_AUTH_USER;
+  const PASSWORD = context.env.BASIC_AUTH_PASS;
 
-  const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
-
-  console.log(`[AUTH] Domain: ${hostname}, IsProduction: ${isProductionDomain}`);
+  const isTestDomain = testDomains.some(domain => hostname.includes(domain));
 
   // Password-protect root route on non-production domains
-  if (pathname === "/" && !isProductionDomain) {
+  if (pathname === "/" && isTestDomain) {
     const auth = request.headers.get("authorization");
     
-    console.log(`[AUTH] Authorization header: ${auth ? 'Present' : 'Missing'}`);
-
     if (!auth) {
-      console.log(`[AUTH] No auth header, prompting for credentials`);
       return new Response("Unauthorized", {
         status: 401,
         headers: {
@@ -39,7 +34,6 @@ export default async function handler(request, context) {
     }
 
     const isValid = isBasicAuthValid(auth, USERNAME, PASSWORD);
-    console.log(`[AUTH] Credentials valid: ${isValid}`);
 
     if (!isValid) {
       return new Response("Invalid credentials", {
@@ -268,17 +262,14 @@ export default async function handler(request, context) {
 
 function isBasicAuthValid(authHeader, username, password) {
   try {
-    console.log(`[AUTH] Validating auth header...`);
     
     // Expected format: "Basic <base64>"
     const parts = authHeader.split(" ");
     if (parts.length !== 2 || parts[0] !== "Basic") {
-      console.log(`[AUTH] Invalid auth header format`);
       return false;
     }
 
     const base64Credentials = parts[1];
-    console.log(`[AUTH] Base64 credentials length: ${base64Credentials.length}`);
     
     // Decode base64 - try different methods for edge environment
     let decoded;
@@ -290,16 +281,12 @@ function isBasicAuthValid(authHeader, username, password) {
         // Fallback: manual base64 decode for edge environments
         decoded = decodeBase64(base64Credentials);
       } catch (e2) {
-        console.error("[AUTH] Failed to decode base64:", e2);
         return false;
       }
     }
-    
-    console.log(`[AUTH] Decoded credentials (length: ${decoded.length})`);
-    
+      
     const colonIndex = decoded.indexOf(":");
     if (colonIndex === -1) {
-      console.log(`[AUTH] No colon separator found in credentials`);
       return false;
     }
     
