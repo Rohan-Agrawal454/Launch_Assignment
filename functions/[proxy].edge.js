@@ -125,23 +125,39 @@ export default async function handler(request, context) {
   }
 
   // ============================================
-  // CDN ASSET REWRITE (/cdn-assets/logo.png)
+  // CDN ASSET PROXY (/cdn-assets/* -> Contentstack)
   // ============================================
 
-  if (pathname === "/cdn-assets/logo.png") {
+  if (pathname.startsWith("/cdn-assets/")) {
+    // Extract filename from path: /cdn-assets/logo.png -> logo.png
+    const filename = pathname.replace("/cdn-assets/", "");
 
+    // Construct Contentstack asset URL
     const targetImage =
-      "https://images.contentstack.io/v3/assets/bltd932e43f7244d14c/blt4d63bba14a3eb134/698ad8274825d0249b494048/logo.png";
+      `https://images.contentstack.io/v3/assets/${filename}`;
 
-    const res = await fetch(targetImage);
+    console.log(`[CDN PROXY] Fetching: ${filename} from Contentstack`);
 
-    return new Response(res.body, {
-      status: 200,
-      headers: {
-        "Content-Type": res.headers.get("Content-Type") || "image/png",
-        "Cache-Control": cacheControl || "public, max-age=86400"
+    try {
+      const res = await fetch(targetImage);
+
+      if (!res.ok) {
+        console.error(`[CDN PROXY] Failed to fetch ${filename}: ${res.status}`);
+        return new Response('Asset not found', { status: 404 });
       }
-    });
+
+      return new Response(res.body, {
+        status: 200,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type") || "image/png",
+          "Cache-Control": "no-cache",
+          "Access-Control-Allow-Origin": "*"
+        }
+      });
+    } catch (error) {
+      console.error(`[CDN PROXY] Error fetching ${filename}:`, error);
+      return new Response('Error fetching asset', { status: 502 });
+    }
   }
 
   // ============================================
