@@ -7,45 +7,28 @@ export default async function handler(request, context) {
   const pathname = url.pathname;
 
   // ============================================
-  // BASIC AUTH FOR NON-PRODUCTION DOMAINS
+  // PASSWORD PROTECTION FOR TEST DOMAINS
   // ============================================
 
   const testDomains = [
     "launchassignment-test.contentstackapps.com"
   ];
 
-  const USERNAME = context.env.BASIC_AUTH_USER;
-  const PASSWORD = context.env.BASIC_AUTH_PASS;
-
   const isTestDomain = testDomains.some(domain => hostname.includes(domain));
 
-  // Password-protect root route on non-production domains
+  // Password-protect homepage on test domains
   if (pathname === "/" && isTestDomain) {
-    const auth = request.headers.get("authorization");
+    const passwordProtection = {
+      username: context.env.BASIC_AUTH_USER,
+      password: context.env.BASIC_AUTH_PASS,
+    };
+
+    const authResponse = handlePasswordProtection(request, passwordProtection);
     
-    if (!auth) {
-      return new Response("Unauthorized", {
-        status: 401,
-        headers: {
-          "WWW-Authenticate": 'Basic realm="Protected Site"',
-          "Content-Type": "text/plain"
-        },
-      });
+    if (authResponse) {
+      return authResponse; // Return 401 if auth failed
     }
 
-    const isValid = isBasicAuthValid(auth, USERNAME, PASSWORD);
-
-    if (!isValid) {
-      return new Response("Invalid credentials", {
-        status: 401,
-        headers: {
-          "WWW-Authenticate": 'Basic realm="Protected Site"',
-          "Content-Type": "text/plain"
-        },
-      });
-    }
-
-    console.log(`[AUTH] Authentication successful, proceeding...`);
   }
 
   // ============================================
@@ -260,72 +243,42 @@ export default async function handler(request, context) {
 // HELPER FUNCTIONS
 // =====================
 
-function isBasicAuthValid(authHeader, username, password) {
-  try {
-    
-    // Expected format: "Basic <base64>"
-    const parts = authHeader.split(" ");
-    if (parts.length !== 2 || parts[0] !== "Basic") {
-      return false;
-    }
-
-    const base64Credentials = parts[1];
-    
-    // Decode base64 - try different methods for edge environment
-    let decoded;
-    try {
-      // Try atob first (standard in web environments)
-      decoded = atob(base64Credentials);
-    } catch {
-      try {
-        // Fallback: manual base64 decode for edge environments
-        decoded = decodeBase64(base64Credentials);
-      } catch (e2) {
-        return false;
-      }
-    }
-      
-    const colonIndex = decoded.indexOf(":");
-    if (colonIndex === -1) {
-      return false;
-    }
-    
-    const user = decoded.substring(0, colonIndex);
-    const pass = decoded.substring(colonIndex + 1);
-    
-    console.log(`[AUTH] Parsed username: "${user}" (expected: "${username}")`);
-    console.log(`[AUTH] Password match: ${pass === password}`);
-    
-    return user === username && pass === password;
-  } catch (error) {
-    console.error("[AUTH] Error validating credentials:", error);
-    return false;
-  }
+function getUnauthorizedResponse(message) {
+  const response = new Response(message, {
+    status: 401,
+  });
+  response.headers.set('WWW-Authenticate', 'Basic realm="Contentstack Launch Protected Area"');
+  return response;
 }
 
-// Fallback base64 decoder for edge environments
-function decodeBase64(str) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-  let output = '';
-  
-  str = str.replace(/[^A-Za-z0-9\+\/\=]/g, '');
-  
-  for (let i = 0; i < str.length; i += 4) {
-    const enc1 = chars.indexOf(str.charAt(i));
-    const enc2 = chars.indexOf(str.charAt(i + 1));
-    const enc3 = chars.indexOf(str.charAt(i + 2));
-    const enc4 = chars.indexOf(str.charAt(i + 3));
-    
-    const chr1 = (enc1 << 2) | (enc2 >> 4);
-    const chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-    const chr3 = ((enc3 & 3) << 6) | enc4;
-    
-    output += String.fromCharCode(chr1);
-    if (enc3 !== 64) output += String.fromCharCode(chr2);
-    if (enc4 !== 64) output += String.fromCharCode(chr3);
+function parseCredentials(authorization) {
+  const [, base64Credentials] = authorization.split(' ');
+  const decoded = atob(base64Credentials);
+  const [inputUsername, inputPassword] = decoded.split(':');
+  return [inputUsername, inputPassword];
+}
+
+function handlePasswordProtection(request, passwordProtection) {
+  const authorization = request.headers.get('authorization');
+
+  if (!authorization) {
+    return getUnauthorizedResponse('Provide Username and Password to access this page.');
   }
-  
-  return output;
+
+  try {
+    const [inputUsername, inputPassword] = parseCredentials(authorization);
+
+    if (inputUsername !== passwordProtection.username || inputPassword !== passwordProtection.password) {
+      return getUnauthorizedResponse(
+        'The Username and Password combination you have entered is invalid.'
+      );
+    }
+
+    return null; // Authentication successful
+  } catch (error) {
+    console.error('[AUTH] Error parsing credentials:', error);
+    return getUnauthorizedResponse('Invalid authentication format.');
+  }
 }
 
 async function fetchWithCache(request, cacheControl) {
