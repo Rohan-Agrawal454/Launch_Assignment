@@ -7,6 +7,33 @@ export default async function handler(request, context) {
   const pathname = url.pathname;
 
   // ============================================
+  // BASIC AUTH FOR NON-PRODUCTION DOMAINS
+  // ============================================
+
+  const testDomains = [
+    "launchassignment-preview.contentstackapps.com"
+  ];
+
+  const USERNAME = context.env.BASIC_AUTH_USER || "admin";
+  const PASSWORD = context.env.BASIC_AUTH_PASS || "supersecret";
+
+  const isProductionDomain = !testDomains.some(domain => hostname.includes(domain));
+
+  // Password-protect root route on non-production domains
+  if (pathname === "/" && !isProductionDomain) {
+    const auth = request.headers.get("authorization");
+
+    if (!auth || !isBasicAuthValid(auth, USERNAME, PASSWORD)) {
+      return new Response("Unauthorized", {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Basic realm="Protected Page"',
+        },
+      });
+    }
+  }
+
+  // ============================================
   // LOCALE DETECTION (BASED ON COUNTRY & LANGUAGE)
   // ============================================
 
@@ -35,9 +62,6 @@ export default async function handler(request, context) {
   }
   else if (pathname.startsWith("/blog/") && pathname !== "/blog/latest") {
     cacheControl = "public, max-age=600, stale-while-revalidate=300";
-  }
-  else if (pathname.startsWith("/cdn-assets/")) {
-    cacheControl = "public, max-age=86400";
   }
 
   // ============================================
@@ -110,13 +134,6 @@ export default async function handler(request, context) {
   // ============================================
   // REWRITE LOGIC - ONLY FOR PRODUCTION DOMAIN
   // ============================================
-
-  const testDomains = [
-    "launchassignment-preview.contentstackapps.com"
-  ];
-
-  const isProductionDomain =
-    !testDomains.some(domain => hostname.includes(domain));
 
   if (pathname === "/latest" && isProductionDomain) {
     const rewriteUrl = new URL(request.url);
@@ -227,6 +244,22 @@ export default async function handler(request, context) {
 // =====================
 // HELPER FUNCTIONS
 // =====================
+
+function isBasicAuthValid(authHeader, username, password) {
+  try {
+    const base64Credentials = authHeader.split(" ")[1];
+    if (!base64Credentials) return false;
+    
+    // Use atob for base64 decoding (works in edge/worker environments)
+    const decoded = atob(base64Credentials);
+    const [user, pass] = decoded.split(":");
+    
+    return user === username && pass === password;
+  } catch (error) {
+    console.error("[AUTH] Error validating credentials:", error);
+    return false;
+  }
+}
 
 async function fetchWithCache(request, cacheControl) {
   const response = await fetch(request);
