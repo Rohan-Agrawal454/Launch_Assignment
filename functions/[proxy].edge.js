@@ -37,11 +37,8 @@ export default async function handler(request, context) {
 
   const country = request.headers.get("visitor-ip-country") || "US";
 
-  let locale = "en-us";
-
   if (country === "IN") {
     locale = "hi-in";
-    
     // Redirect India users to /in route when accessing homepage
     if (pathname === "/") {
       console.log(`[LOCALE] Redirecting India user to /in with hi-in cookie`);
@@ -50,6 +47,19 @@ export default async function handler(request, context) {
         headers: {
           "Location": "/in",
           "Set-Cookie": "NEXT_LOCALE=hi-in; Path=/; Max-Age=31536000"
+        }
+      });
+    }
+  }
+  else{
+    locale = "en-us";
+    if (pathname === "/") {
+      console.log(`[LOCALE] Redirecting non-India user to / with en-us cookie`);
+      return new Response(null, {
+        status: 307,
+        headers: {
+          "Location": "/",
+          "Set-Cookie": "NEXT_LOCALE=en-us; Path=/; Max-Age=31536000"
         }
       });
     }
