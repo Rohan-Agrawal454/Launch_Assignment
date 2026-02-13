@@ -7,19 +7,6 @@ export default async function handler(request, context) {
   const pathname = url.pathname;
 
   // ============================================
-  // SKIP EDGE FUNCTION FOR CLOUD FUNCTION PATHS
-  // ============================================
-  
-  // Cloud functions need to bypass the edge function completely
-  // Don't apply any edge logic - pass directly to origin
-  if (pathname.startsWith('/cachepriming')) {
-    console.log('[EDGE] Bypassing all edge logic for cloud function:', pathname);
-    // Create a new request without any edge modifications
-    const originRequest = new Request(request);
-    return await fetch(originRequest);
-  }
-
-  // ============================================
   // PASSWORD PROTECTION FOR TEST DOMAINS
   // ============================================
 
