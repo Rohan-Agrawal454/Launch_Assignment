@@ -36,19 +36,16 @@ export default async function handler(request, context) {
   // ============================================
 
   const country = request.headers.get("visitor-ip-country") || "US";
-  let locale = "en-us";
 
   // Only redirect India users, let everyone else pass through normally
   if (country === "IN" && pathname === "/") {
-    locale = "hi-in";
-    console.log(`[LOCALE] Redirecting India user to /in with hi-in cookie`);
-    return new Response(null, {
-      status: 307,
-      headers: {
-        "Location": "/in",
-        "Set-Cookie": "NEXT_LOCALE=hi-in; Path=/; Max-Age=31536000"
-      }
-    });
+    console.log(`[LOCALE] Setting hi-in cookie for India user on homepage`);
+    
+    // Set cookie without redirecting - user stays on /
+    const response = await fetch(request);
+    const modifiedResponse = new Response(response.body, response);
+    modifiedResponse.headers.set("Set-Cookie", "NEXT_LOCALE=hi-in; Path=/; Max-Age=31536000");
+    return modifiedResponse;
   }
 
   // ============================================
