@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getHomepage } from "@/lib/contentstack";
 import type { Metadata } from "next";
+import { cookies } from 'next/headers';
 
 // Helper function to get color classes
 const getColorClasses = (colour: string) => {
@@ -33,7 +34,9 @@ const getColorClasses = (colour: string) => {
 
 // Generate metadata from CMS for India
 export async function generateMetadata(): Promise<Metadata> {
-  const homepage = await getHomepage('hi-in');
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'hi-in';
+  const homepage = await getHomepage(locale);
 
   return {
     title: homepage?.seo?.meta_title || homepage?.title || 'AI Blog Platform - India',
@@ -42,10 +45,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function IndiaPage() {
-  // Force Hindi locale for India page
-  const locale = 'hi-in';
+  // Get locale from cookie or default to Hindi for India page
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'hi-in';
   
-  // Fetch homepage content from Contentstack with Hindi locale
+  // Fetch homepage content from Contentstack with selected locale
   const homepage = await getHomepage(locale);
 
   // If CMS data is not available, show loading or fallback
