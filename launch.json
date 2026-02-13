@@ -5,5 +5,12 @@
       "destination": "/blog/latest",
       "statusCode" : 307
     }
-  ]
+  ],
+  "cache": {
+        "cachePriming": {
+            "urls": [
+                "/"
+            ]
+        }
+    }
 }

@@ -133,7 +133,7 @@ export default async function handler(request, context) {
   // REWRITE LOGIC - ONLY FOR PRODUCTION DOMAIN
   // ============================================
 
-  if (pathname === "/latest" && isProductionDomain) {
+  if (pathname === "/latest" && isTestDomain) {
     const rewriteUrl = new URL(request.url);
     rewriteUrl.pathname = "/blog/latest";
     return fetchWithCache(new Request(rewriteUrl, request), cacheControl);
