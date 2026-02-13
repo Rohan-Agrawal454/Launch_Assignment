@@ -51,8 +51,6 @@ export default async function handler(request, context) {
     });
   }
 
-  console.log(`[LOCALE] Country: ${country}, Locale: ${locale}, Path: ${pathname}`);
-
   // ============================================
   // SMART CACHING POLICY (TOP LEVEL)
   // ============================================
