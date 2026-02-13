@@ -1,21 +1,22 @@
 // Contentstack Launch Cloud Function
 // Receives webhook from Contentstack Automate and updates GitHub repository
 
-export default async function handler(request, context) {
+export default async function handler(req, res) {
   console.log('[CACHE PRIMING] Request received');
+  
+  // Only allow POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
-    // Parse request body
-    const body = await request.body;
-    const { urls } = body;
+    // Parse request body (already parsed by Launch)
+    const { urls } = req.body;
+
+    console.log('[CACHE PRIMING] Request body:', req.body);
 
     if (!urls || !Array.isArray(urls)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid request: urls array required' }),
-        { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return res.status(400).json({ error: 'Invalid request: urls array required' });
     }
 
     console.log('[CACHE PRIMING] Received raw URLs:', urls);
@@ -39,24 +40,23 @@ export default async function handler(request, context) {
     console.log('[CACHE PRIMING] Parsed URLs:', parsedUrls);
 
     if (parsedUrls.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No valid URLs provided' }),
-        { 
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return res.status(400).json({ error: 'No valid URLs provided' });
     }
 
     const validUrls = parsedUrls;
 
-    // Get GitHub credentials from environment (context.env for deployed, process.env for local)
-    const env = context?.env || process.env;
-    const githubToken = env.GITHUB_TOKEN;
-    const githubOwner = env.GITHUB_OWNER;
-    const githubRepo = env.GITHUB_REPO;
-    const githubBranch = env.GITHUB_BRANCH || 'main';
+    // Get GitHub credentials from environment variables
+    const githubToken = process.env.GITHUB_TOKEN;
+    const githubOwner = process.env.GITHUB_OWNER;
+    const githubRepo = process.env.GITHUB_REPO;
+    const githubBranch = process.env.GITHUB_BRANCH || 'main';
 
+    console.log('[CACHE PRIMING] Environment check:', {
+      hasToken: !!githubToken,
+      hasOwner: !!githubOwner,
+      hasRepo: !!githubRepo,
+      branch: githubBranch
+    });
 
     if (!githubToken || !githubOwner || !githubRepo) {
       throw new Error('Missing GitHub configuration in environment variables');
@@ -82,7 +82,7 @@ export default async function handler(request, context) {
     const fileData = await getResponse.json();
     
     // Decode base64 content
-    const currentContent = atob(fileData.content);
+    const currentContent = Buffer.from(fileData.content, 'base64').toString('utf-8');
     const launchConfig = JSON.parse(currentContent);
 
     // Step 2: Update cache priming URLs
@@ -110,7 +110,7 @@ export default async function handler(request, context) {
       },
       body: JSON.stringify({
         message: `chore: update cache priming URLs via Contentstack Automate\n\nURLs: ${validUrls.join(', ')}`,
-        content: btoa(updatedContent),
+        content: Buffer.from(updatedContent).toString('base64'),
         sha: fileData.sha,
         branch: githubBranch
       })
@@ -127,31 +127,19 @@ export default async function handler(request, context) {
     console.log('[CACHE PRIMING] Commit SHA:', commitData.commit.sha);
 
     // Return success response
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: 'Cache priming URLs updated successfully',
-        urls: validUrls,
-        commit: commitData.commit.sha,
-        commitUrl: commitData.commit.html_url
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return res.status(200).json({
+      success: true,
+      message: 'Cache priming URLs updated successfully',
+      urls: validUrls,
+      commit: commitData.commit.sha,
+      commitUrl: commitData.commit.html_url
+    });
 
   } catch (error) {
     console.error('[CACHE PRIMING] Error:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Failed to update cache priming URLs',
-        details: error.message 
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return res.status(500).json({ 
+      error: 'Failed to update cache priming URLs',
+      details: error.message 
+    });
   }
 }
