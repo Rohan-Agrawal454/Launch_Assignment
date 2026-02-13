@@ -32,22 +32,24 @@ export default async function handler(request, context) {
   }
 
   // ============================================
-  // LOCALE DETECTION (BASED ON COUNTRY & LANGUAGE)
+  // LOCALE DETECTION & ROUTING (BASED ON COUNTRY)
   // ============================================
 
-  /*
-  const acceptLanguage = request.headers.get("accept-language") || "en";
   const country = request.headers.get("visitor-ip-country") || "US";
 
-  let locale = acceptLanguage.split(",")[0].split("-")[0]; // "fr", "en", "ja"
+  let locale = "en-us";
 
-  // Override locale based on country
-  if (country === "FR") locale = "fr";
-  if (country === "JP") locale = "ja";
-  if (country === "IN") locale = "en";
+  if (country === "IN") {
+    locale = "hi-in";
+    
+    // Redirect India users to /in route when accessing homepage
+    if (pathname === "/") {
+      console.log(`[LOCALE] Redirecting India user to /in`);
+      return Response.redirect(new URL("/in", request.url), 307);
+    }
+  }
 
-  console.log(`[LOCALE] Detected country: ${country}, locale: ${locale}`);
-  */
+  console.log(`[LOCALE] Country: ${country}, Locale: ${locale}, Path: ${pathname}`);
 
   // ============================================
   // SMART CACHING POLICY (TOP LEVEL)

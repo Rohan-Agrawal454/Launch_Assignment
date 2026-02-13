@@ -11,7 +11,7 @@ interface Language {
 
 const languages: Language[] = [
   { code: 'en-us', name: 'English', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'hi-in', name: 'Hindi', flag: '🇮🇳' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
 ];
 
