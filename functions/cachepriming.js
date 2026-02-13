@@ -2,20 +2,10 @@
 // Receives webhook from Contentstack Automate and updates GitHub repository
 
 export default async function handler(request, context) {
-  // Only allow POST requests
-  if (request.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }), 
-      { 
-        status: 405,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
-  }
-
+  console.log('[CACHE PRIMING] Request received');
   try {
     // Parse request body
-    const body = await request.json();
+    const body = await request.body;
     const { urls } = body;
 
     if (!urls || !Array.isArray(urls)) {
@@ -60,11 +50,13 @@ export default async function handler(request, context) {
 
     const validUrls = parsedUrls;
 
-    // Get GitHub credentials from environment
-    const githubToken = context.env.GITHUB_TOKEN;
-    const githubOwner = context.env.GITHUB_OWNER;
-    const githubRepo = context.env.GITHUB_REPO;
-    const githubBranch = context.env.GITHUB_BRANCH || 'main';
+    // Get GitHub credentials from environment (context.env for deployed, process.env for local)
+    const env = context?.env || process.env;
+    const githubToken = env.GITHUB_TOKEN;
+    const githubOwner = env.GITHUB_OWNER;
+    const githubRepo = env.GITHUB_REPO;
+    const githubBranch = env.GITHUB_BRANCH || 'main';
+
 
     if (!githubToken || !githubOwner || !githubRepo) {
       throw new Error('Missing GitHub configuration in environment variables');

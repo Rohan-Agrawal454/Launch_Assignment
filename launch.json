@@ -1,4 +1,10 @@
 {
+  "functions": [
+    {
+      "path": "/cachepriming",
+      "function": "functions/cachepriming.js"
+    }
+  ],
   "redirects": [
     {
       "source": "/blog/ai",
