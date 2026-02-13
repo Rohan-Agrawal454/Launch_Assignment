@@ -36,6 +36,7 @@ export default async function handler(request, context) {
   // ============================================
 
   const country = request.headers.get("visitor-ip-country") || "US";
+  let locale = "en-us";
 
   if (country === "IN") {
     locale = "hi-in";
