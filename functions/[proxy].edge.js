@@ -106,6 +106,7 @@ export default async function handler(request, context) {
       "127.0.0.1",
       "::1",
       "154.84.245.58",
+      "34.206.81.169",
       "27.107.90.206"
     ];
 

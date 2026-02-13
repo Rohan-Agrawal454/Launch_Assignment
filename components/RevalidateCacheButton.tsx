@@ -8,16 +8,16 @@ export default function RevalidateCacheButton() {
   const handleRevalidate = async () => {
     setIsLoading(true);
     try {
-      // Step 1: Clear Next.js ISR cache
-      const nextRes = await fetch("/api/revalidate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: "/blog/generativeai" })
-      });
+      // // Step 1: Clear Next.js ISR cache
+      // const nextRes = await fetch("/api/revalidate", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ path: "/blog/generativeai" })
+      // });
       
-      if (!nextRes.ok) {
-        throw new Error('Failed to revalidate Next.js cache');
-      }
+      // if (!nextRes.ok) {
+      //   throw new Error('Failed to revalidate Next.js cache');
+      // }
 
       // Step 2: Clear Edge/CDN cache via Contentstack Automate
       const edgeRes = await fetch("/automate/trigger?path=/blog/generativeai", {
@@ -26,7 +26,7 @@ export default function RevalidateCacheButton() {
 
       const edgeData = await edgeRes.json();
       
-      alert('✅ Cache cleared! Refreshing page...');
+      // alert('✅ Cache cleared! Refreshing page...');
       
       // Refresh the page to show new content
       setTimeout(() => {
