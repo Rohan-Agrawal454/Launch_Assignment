@@ -154,37 +154,37 @@ export default async function handler(request, context) {
   // CDN ASSET PROXY (/cdn-assets/* -> Contentstack)
   // ============================================
 
-  // if (pathname.startsWith("/cdn-assets/")) {
-  //   // Extract filename from path: /cdn-assets/logo.png -> logo.png
-  //   const filename = pathname.replace("/cdn-assets/", "");
+  if (pathname.startsWith("/cdn-assets/")) {
+    // Extract filename from path: /cdn-assets/logo.png -> logo.png
+    const filename = pathname.replace("/cdn-assets/", "");
 
-  //   // Construct Contentstack asset URL
-  //   const targetImage =
-  //     `https://images.contentstack.io/v3/assets/${filename}`;
+    // Construct Contentstack asset URL
+    const targetImage =
+      `https://images.contentstack.io/v3/assets/${filename}`;
 
-  //   console.log(`[CDN PROXY] Fetching: ${filename} from Contentstack`);
+    console.log(`[CDN PROXY] Fetching: ${filename} from Contentstack`);
 
-  //   try {
-  //     const res = await fetch(targetImage);
+    try {
+      const res = await fetch(targetImage);
 
-  //     if (!res.ok) {
-  //       console.error(`[CDN PROXY] Failed to fetch ${filename}: ${res.status}`);
-  //       return new Response('Asset not found', { status: 404 });
-  //     }
+      if (!res.ok) {
+        console.error(`[CDN PROXY] Failed to fetch ${filename}: ${res.status}`);
+        return new Response('Asset not found', { status: 404 });
+      }
 
-  //     return new Response(res.body, {
-  //       status: 200,
-  //       headers: {
-  //         "Content-Type": res.headers.get("Content-Type") || "image/png",
-  //         "Cache-Control": "no-cache",
-  //         "Access-Control-Allow-Origin": "*"
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error(`[CDN PROXY] Error fetching ${filename}:`, error);
-  //     return new Response('Error fetching asset', { status: 502 });
-  //   }
-  // }
+      return new Response(res.body, {
+        status: 200,
+        headers: {
+          "Content-Type": res.headers.get("Content-Type") || "image/png",
+          "Cache-Control": "public, max-age=86400",
+          "Access-Control-Allow-Origin": "*"
+        }
+      });
+    } catch (error) {
+      console.error(`[CDN PROXY] Error fetching ${filename}:`, error);
+      return new Response('Error fetching asset', { status: 502 });
+    }
+  }
 
   // ============================================
   // OAUTH CREDENTIALS
