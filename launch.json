@@ -1,25 +1,9 @@
 {
-  "functions": [
-    {
-      "path": "/cachepriming",
-      "function": "functions/cachepriming.js"
-    }
-  ],
   "redirects": [
     {
       "source": "/blog/ai",
       "destination": "/blog/latest",
       "statusCode": 307
     }
-  ],
-  "cache": {
-    "cachePriming": {
-      "urls": [
-        "/",
-        "/blog/latest",
-        "/blog/ai",
-        "/blog/generativeai"
-      ]
-    }
-  }
+  ]
 }
