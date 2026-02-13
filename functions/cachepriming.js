@@ -58,6 +58,15 @@ export default async function handler(req, res) {
       branch: githubBranch
     });
 
+    return res.status(200).json({
+      debug: {
+        hasToken: process.env.GITHUB_TOKEN,
+        hasOwner: process.env.GITHUB_OWNER,
+        hasRepo: process.env.GITHUB_REPO,
+        branch: process.env.GITHUB_BRANCH
+      }
+    });
+
     if (!githubToken || !githubOwner || !githubRepo) {
       throw new Error('Missing GitHub configuration in environment variables');
     }
