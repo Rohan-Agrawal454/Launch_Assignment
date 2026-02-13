@@ -1,4 +1,10 @@
 {
+  "functions": [
+    {
+      "path": "/*",
+      "function": "functions/[proxy].edge.js"
+    }
+  ],
   "redirects": [
     {
       "source": "/blog/ai",
