@@ -5,15 +5,5 @@
       "destination": "/blog/latest",
       "statusCode": 307
     }
-  ],
-  "cache": {
-    "cachePriming": {
-      "urls": [
-        "/",
-        "/blog/latest",
-        "/blog/ai",
-        "/blog/generativeai"
-      ]
-    }
-  }
+  ]
 }
