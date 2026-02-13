@@ -45,9 +45,13 @@ export default async function handler(request, context) {
     // Redirect India users to /in route when accessing homepage
     if (pathname === "/") {
       console.log(`[LOCALE] Redirecting India user to /in with hi-in cookie`);
-      const redirectResponse = Response.redirect(new URL("/in", request.url), 307);
-      redirectResponse.headers.set("Set-Cookie", "NEXT_LOCALE=hi-in; Path=/; Max-Age=31536000");
-      return redirectResponse;
+      return new Response(null, {
+        status: 307,
+        headers: {
+          "Location": "/in",
+          "Set-Cookie": "NEXT_LOCALE=hi-in; Path=/; Max-Age=31536000"
+        }
+      });
     }
   }
 
