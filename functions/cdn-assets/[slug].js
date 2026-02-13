@@ -19,18 +19,26 @@ export default async function handler(req, res) {
       
       console.log('[CDN PROXY] Fetching from:', assetUrl);
   
-      // Fetch the asset from Contentstack
-      const assetResponse = await fetch(assetUrl);
-  
-      if (!assetResponse.ok) {
-        return res.status(404).json({ error: 'Asset not found' });
-      }
-  
-      // Get the asset data
-      const assetData = await assetResponse.arrayBuffer();
-      
-      // Send the asset directly (rewrite/mask the URL)
-      return res.status(200).send(Buffer.from(assetData));
+    // Fetch the asset from Contentstack
+    const assetResponse = await fetch(assetUrl);
+
+    if (!assetResponse.ok) {
+      return res.status(404).json({ error: 'Asset not found' });
+    }
+
+    // Get content type from Contentstack response
+    const contentType = assetResponse.headers.get('content-type');
+    
+    // Get the asset data
+    const assetData = await assetResponse.arrayBuffer();
+    
+    // Set content type so browser displays the image
+    if (contentType) {
+      res.setHeader('Content-Type', contentType);
+    }
+    
+    // Send the asset directly (rewrite/mask the URL)
+    return res.status(200).send(Buffer.from(assetData));
   
     } catch (error) {
       console.error('[CDN PROXY] Error:', error);
