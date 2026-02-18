@@ -4,6 +4,11 @@
       "source": "/blog/ai",
       "destination": "/blog/latest",
       "statusCode": 307
+    },
+    {
+      "source": "https://launchassignment-b6f4d9.contentstackapps.com/blog/gemini",
+      "destination": "https://stackinsights.contentstackapps.com",
+      "statusCode": 307
     }
   ],
   "cache": {
