@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description: "Articles, tutorials, and insights about ChatGPT and conversational AI",
 };
 
+// @cache-priming-enabled
 // Static Site Generation (SSG) - Evergreen content
 export default async function ChatGPTPage() {
   // Fetch posts from Contentstack

@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description: "The latest and trending articles on AI, ML, and emerging technologies",
 };
 
+// @cache-priming-enabled
 // Incremental Static Regeneration (ISR) - Revalidate every 60 seconds
 export const revalidate = 60;
 

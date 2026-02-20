@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import BlogDetail from '@/components/BlogDetail';
 import { getBlogPostBySlug } from '@/lib/contentstack';
 
+// @cache-priming-enabled
 // Generate metadata for SEO
 export async function generateMetadata({ 
   params 

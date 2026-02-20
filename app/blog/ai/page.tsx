@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description: "Explore articles about artificial intelligence and machine learning",
 };
 
+// @cache-priming-enabled
 // Static Site Generation (SSG) - Evergreen content
 export default async function AIBlogPage() {
   // Fetch posts from Contentstack

@@ -1,33 +1,34 @@
+// @cache-priming-enabled
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getHomepage } from "@/lib/contentstack";
 import type { Metadata } from "next";
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
 // Helper function to get color classes
 const getColorClasses = (colour: string) => {
   const colors: Record<string, { border: string; bg: string; text: string }> = {
     blue: {
-      border: 'border-blue-100',
-      bg: 'from-blue-100 to-blue-200',
-      text: 'text-blue-600'
+      border: "border-blue-100",
+      bg: "from-blue-100 to-blue-200",
+      text: "text-blue-600",
     },
     purple: {
-      border: 'border-purple-100',
-      bg: 'from-purple-100 to-purple-200',
-      text: 'text-purple-600'
+      border: "border-purple-100",
+      bg: "from-purple-100 to-purple-200",
+      text: "text-purple-600",
     },
     green: {
-      border: 'border-green-100',
-      bg: 'from-green-100 to-green-200',
-      text: 'text-green-600'
+      border: "border-green-100",
+      bg: "from-green-100 to-green-200",
+      text: "text-green-600",
     },
     orange: {
-      border: 'border-orange-100',
-      bg: 'from-orange-100 to-orange-200',
-      text: 'text-orange-600'
-    }
+      border: "border-orange-100",
+      bg: "from-orange-100 to-orange-200",
+      text: "text-orange-600",
+    },
   };
   return colors[colour] || colors.blue;
 };
@@ -35,20 +36,23 @@ const getColorClasses = (colour: string) => {
 // Generate metadata from CMS
 export async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies();
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en-us';
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en-us";
   const homepage = await getHomepage(locale);
 
   return {
-    title: homepage?.seo?.meta_title || homepage?.title || 'AI Blog Platform',
-    description: homepage?.seo?.meta_description || homepage?.hero_section.subtitle || 'Your premier AI blog platform',
+    title: homepage?.seo?.meta_title || homepage?.title || "AI Blog Platform",
+    description:
+      homepage?.seo?.meta_description ||
+      homepage?.hero_section.subtitle ||
+      "Your premier AI blog platform",
   };
 }
 
 export default async function Home() {
   // Get locale from cookie or default to English
   const cookieStore = await cookies();
-  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en-us';
-  
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en-us";
+
   // Fetch homepage content from Contentstack with selected locale
   const homepage = await getHomepage(locale);
 
@@ -83,13 +87,13 @@ export default async function Home() {
             {homepage.hero_section.subtitle}
           </p>
           <div className="flex gap-4 justify-center">
-            <a 
+            <a
               href={homepage.hero_section.primary_cta.link}
               className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
             >
               {homepage.hero_section.primary_cta.text}
             </a>
-            <a 
+            <a
               href={homepage.hero_section.secondary_cta.link}
               className="px-8 py-3 bg-white hover:bg-gray-50 text-gray-900 font-semibold rounded-lg border-2 border-gray-200 transition-colors"
             >
@@ -103,24 +107,35 @@ export default async function Home() {
           {homepage.featured_categories.map((category, index) => {
             const colors = getColorClasses(category.colour);
             return (
-              <a 
-                key={category._metadata?.uid || index} 
-                href={category.link} 
+              <a
+                key={category._metadata?.uid || index}
+                href={category.link}
                 className="group animate-fade-in"
-                style={{animationDelay: `${index * 0.1}s`}}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className={`bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border ${colors.border}`}>
-                  <div className={`w-14 h-14 bg-linear-to-br ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm`}>
+                <div
+                  className={`bg-white rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border ${colors.border}`}
+                >
+                  <div
+                    className={`w-14 h-14 bg-linear-to-br ${colors.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-sm`}
+                  >
                     <span className="text-3xl">{category.icon}</span>
                   </div>
-                  <h3 className={`text-xl font-semibold text-gray-900 mb-2 group-hover:${colors.text} transition-colors`}>
+                  <h3
+                    className={`text-xl font-semibold text-gray-900 mb-2 group-hover:${colors.text} transition-colors`}
+                  >
                     {category.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {category.description}
                   </p>
-                  <div className={`mt-4 ${colors.text} font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1`}>
-                    Explore <span className="transition-transform group-hover:translate-x-1">→</span>
+                  <div
+                    className={`mt-4 ${colors.text} font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1`}
+                  >
+                    Explore{" "}
+                    <span className="transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
                   </div>
                 </div>
               </a>
@@ -135,7 +150,10 @@ export default async function Home() {
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {homepage.features_section.features_group.map((feature, index) => (
-              <div key={feature._metadata?.uid || index} className="text-center">
+              <div
+                key={feature._metadata?.uid || index}
+                className="text-center"
+              >
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-3xl">{feature.icon}</span>
                 </div>
@@ -150,16 +168,30 @@ export default async function Home() {
 
         {/* Tools Section */}
         <div className="grid md:grid-cols-2 gap-6">
-          <a href="/author-tools" className="bg-linear-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow">
+          <a
+            href="/author-tools"
+            className="bg-linear-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow"
+          >
             <h3 className="text-2xl font-bold mb-2">Author Tools</h3>
-            <p className="mb-4 opacity-90">Access writing resources, manage drafts, and track your content performance</p>
+            <p className="mb-4 opacity-90">
+              Access writing resources, manage drafts, and track your content
+              performance
+            </p>
             <span className="text-blue-100 font-medium">Explore Tools →</span>
           </a>
 
-          <a href="/editor-dashboard" className="bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow">
+          <a
+            href="/editor-dashboard"
+            className="bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-shadow"
+          >
             <h3 className="text-2xl font-bold mb-2">Editor Dashboard</h3>
-            <p className="mb-4 opacity-90">Review submissions, manage publications, and oversee content quality</p>
-            <span className="text-purple-100 font-medium">Open Dashboard →</span>
+            <p className="mb-4 opacity-90">
+              Review submissions, manage publications, and oversee content
+              quality
+            </p>
+            <span className="text-purple-100 font-medium">
+              Open Dashboard →
+            </span>
           </a>
         </div>
       </main>
