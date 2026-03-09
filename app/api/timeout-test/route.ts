@@ -5,8 +5,6 @@ export async function GET(request: NextRequest) {
   const delay = parseInt(url.searchParams.get('delay') || '65000', 10);
   
   console.log(`[TIMEOUT TEST] Starting ${delay}ms delay...`);
-  console.log(`[TIMEOUT TEST] Request URL: ${request.url}`);
-  console.log(`[TIMEOUT TEST] Request headers:`, Object.fromEntries(request.headers));
   
   try {
     await new Promise(resolve => setTimeout(resolve, delay));
@@ -36,7 +34,6 @@ export async function POST(request: NextRequest) {
   const delay = body.delay || 65000;
   
   console.log(`[TIMEOUT TEST] POST request - Starting ${delay}ms delay...`);
-  console.log(`[TIMEOUT TEST] Request body:`, body);
   
   try {
     await new Promise(resolve => setTimeout(resolve, delay));
