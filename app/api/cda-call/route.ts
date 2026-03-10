@@ -1,31 +1,27 @@
 import { NextResponse } from "next/server";
+import { getHomepage } from "@/lib/contentstack";
 
 let requestCounter = 0;
 
 export async function GET() {
   requestCounter++;
   const reqId = requestCounter;
-  
-  const cdaUrl = `https://cdn.contentstack.io/v3/content_types/homepage/entries`;
+
+  console.log(`[SDK-${reqId}] Making 10 concurrent SDK calls...`);
 
   const promises = Array.from({ length: 10 }, async (_, i) => {
     try {
-      const response = await fetch(cdaUrl, {
-        headers: {
-          api_key: process.env.CONTENTSTACK_API_KEY || "",
-          access_token: process.env.CONTENTSTACK_DELIVERY_TOKEN || "",
-        },
-      });
+      const homepage = await getHomepage('en-us');
       
-      console.log(`[CDA-${reqId}.${i + 1}] ✅`);
-      return await response.json();
+      console.log(`[SDK-${reqId}.${i + 1}] ✅`);
+      return homepage;
       
     } catch (err) {
       const error = err as { code?: string; message?: string };
-      console.log(`[CDA-${reqId}.${i + 1}] ❌ ${error?.code}: ${error?.message}`);
+      console.log(`[SDK-${reqId}.${i + 1}] ❌ ${error?.code}: ${error?.message}`);
       
       if (error?.code === 'ETIMEDOUT') {
-        console.log(`[CDA-${reqId}.${i + 1}] 🎯 ETIMEDOUT ERROR!`);
+        console.log(`[SDK-${reqId}.${i + 1}] 🎯 ETIMEDOUT ERROR!`);
       }
       
       return null;
